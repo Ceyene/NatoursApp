@@ -13,6 +13,8 @@ const tours = JSON.parse(
 );
 
 /////routing configuration/////
+
+//handlers for routes
 const getAllTours = (req, res) => {
   //send data to the client
   res.status(200).json({
@@ -101,11 +103,13 @@ const deleteTour = (req, res) => {
   });
 };
 
-app.get('/api/v1/tours', getAllTours);
-app.get('/api/v1/tours/:id', getTour);
-app.post('/api/v1/tours', createTour);
-app.patch('/api/v1/tours/:id', updateTour);
-app.delete('/api/v1/tours/:id', deleteTour);
+//routes
+app.route('/api/v1/tours').get(getAllTours).post(createTour);
+app
+  .route('/api/v1/tours/:id')
+  .get(getTour)
+  .patch(updateTour)
+  .delete(deleteTour);
 
 //establishing the port
 const port = 3000;
