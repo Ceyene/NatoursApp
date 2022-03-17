@@ -1,18 +1,20 @@
-//dependencies
+//requiring dependencies
 const fs = require('fs');
 const express = require('express');
 
 const app = express();
 
-//express.json() --> middleware that will allow us to put body data inside the request (Express by itself doesn't do it)
+//using middlewares --> express.json() --> middleware that will allow us to put body data inside the request (Express by itself doesn't do it)
 app.use(express.json());
 
-//read the data we have (top level code) and parse it from JSON to an array of JS objects
+//reading the data we have (top level code) and parsing it from JSON to an array of JS objects
 const tours = JSON.parse(
   fs.readFileSync(`${__dirname}/dev-data/data/tours-simple.json`)
 );
 
-//routing configuration
+/////routing configuration/////
+
+//searching for all tours
 app.get('/api/v1/tours', (req, res) => {
   //send data to the client
   res.status(200).json({
@@ -23,7 +25,8 @@ app.get('/api/v1/tours', (req, res) => {
     },
   });
 });
-//responding to url parameters
+
+//searching for a specific tour
 app.get('/api/v1/tours/:id', (req, res) => {
   console.log(req.params);
   //convert the id into a number
@@ -46,6 +49,7 @@ app.get('/api/v1/tours/:id', (req, res) => {
   });
 });
 
+//adding a new tour
 app.post('/api/v1/tours', (req, res) => {
   //console.log(req.body);
 
@@ -69,9 +73,12 @@ app.post('/api/v1/tours', (req, res) => {
     }
   );
 });
+//updating a specific tour
+app.patch('api/v1/tours/:id', (req, res) => {});
 
+//establishing the port
 const port = 3000;
-//create a server
+//creating server
 app.listen(port, () => {
   console.log(`App running on port ${port}`);
 });
