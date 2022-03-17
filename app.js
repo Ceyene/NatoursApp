@@ -1,21 +1,24 @@
 //dependencies
+const fs = require('fs');
 const express = require('express');
 
 const app = express();
 
+//read the data we have (top level code) and parse it from JSON to an array of JS objects
+const tours = JSON.parse(
+  fs.readFileSync(`${__dirname}/dev-data/data/tours-simple.json`)
+);
+
 //routing configuration
-//we need a route for each url and each HTTP Method to be used in order to get a result from them
-app.get('/', (req, res) => {
-  //we send some data
-
-  //res.status(200).send('Hello from the server side!!');
-  res
-    .status(200)
-    .json({ message: 'Hello from the server side', app: 'Natours' });
-});
-
-app.post('/', (req, res) => {
-  res.send('You can post to this endpoint...');
+app.get('/api/v1/tours', (req, res) => {
+  //send data to the client
+  res.status(200).json({
+    status: 'success',
+    results: tours.length, //when sending multiple results
+    data: {
+      tours, //tours: tours
+    },
+  });
 });
 
 const port = 3000;
