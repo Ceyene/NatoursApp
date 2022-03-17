@@ -64,6 +64,7 @@ app.post('/api/v1/tours', (req, res) => {
     `${__dirname}/dev-data/data/tours-simple.json`,
     JSON.stringify(tours),
     (err) => {
+      //status = 201 ---> Created
       res.status(201).json({
         status: 'success',
         data: {
@@ -90,6 +91,24 @@ app.patch('/api/v1/tours/:id', (req, res) => {
     data: {
       tour: '<updated tour here>',
     },
+  });
+});
+
+//deleting a specific tour
+app.delete('/api/v1/tours/:id', (req, res) => {
+  //convert the id param into a number
+  const id = req.params.id * 1;
+  //validating the id
+  if (!id || id > tours.length) {
+    return res.status(404).json({
+      status: 'fail',
+      message: 'Invalid ID',
+    });
+  }
+  //status = 204 ---> No Content
+  res.status(204).json({
+    status: 'success',
+    data: null, //-> we won't send any data, because the resource no longer exists
   });
 });
 
