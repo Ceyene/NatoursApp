@@ -23,6 +23,28 @@ app.get('/api/v1/tours', (req, res) => {
     },
   });
 });
+//responding to url parameters
+app.get('/api/v1/tours/:id', (req, res) => {
+  console.log(req.params);
+  //convert the id into a number
+  const id = req.params.id * 1;
+  //check if the id exists in our "database" file
+  if (!id || id > tours.length) {
+    return res.status(404).json({
+      status: 'fail',
+      message: 'Invalid ID',
+    });
+  }
+  //search for the tour that matches with the id
+  const tour = tours.find((el) => el.id == id);
+  //send specified tour to the client
+  res.status(200).json({
+    status: 'success',
+    data: {
+      tour,
+    },
+  });
+});
 
 app.post('/api/v1/tours', (req, res) => {
   //console.log(req.body);
