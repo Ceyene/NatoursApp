@@ -73,8 +73,25 @@ app.post('/api/v1/tours', (req, res) => {
     }
   );
 });
+
 //updating a specific tour
-app.patch('api/v1/tours/:id', (req, res) => {});
+app.patch('/api/v1/tours/:id', (req, res) => {
+  //convert the id param into a number
+  const id = req.params.id * 1;
+  //validating the id
+  if (!id || id > tours.length) {
+    return res.status(404).json({
+      status: 'fail',
+      message: 'Invalid ID',
+    });
+  }
+  res.status(200).json({
+    status: 'success',
+    data: {
+      tour: '<updated tour here>',
+    },
+  });
+});
 
 //establishing the port
 const port = 3000;
