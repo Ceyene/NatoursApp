@@ -13,9 +13,7 @@ const tours = JSON.parse(
 );
 
 /////routing configuration/////
-
-//searching for all tours
-app.get('/api/v1/tours', (req, res) => {
+const getAllTours = (req, res) => {
   //send data to the client
   res.status(200).json({
     status: 'success',
@@ -24,10 +22,8 @@ app.get('/api/v1/tours', (req, res) => {
       tours, //tours: tours
     },
   });
-});
-
-//searching for a specific tour
-app.get('/api/v1/tours/:id', (req, res) => {
+};
+const getTour = (req, res) => {
   console.log(req.params);
   //convert the id into a number
   const id = req.params.id * 1;
@@ -47,12 +43,9 @@ app.get('/api/v1/tours/:id', (req, res) => {
       tour,
     },
   });
-});
-
-//adding a new tour
-app.post('/api/v1/tours', (req, res) => {
+};
+const createTour = (req, res) => {
   //console.log(req.body);
-
   //create a new Id and Tour
   const newId = tours[tours.length - 1].id + 1;
   const newTour = Object.assign({ id: newId }, req.body);
@@ -73,10 +66,8 @@ app.post('/api/v1/tours', (req, res) => {
       });
     }
   );
-});
-
-//updating a specific tour
-app.patch('/api/v1/tours/:id', (req, res) => {
+};
+const updateTour = (req, res) => {
   //convert the id param into a number
   const id = req.params.id * 1;
   //validating the id
@@ -92,10 +83,8 @@ app.patch('/api/v1/tours/:id', (req, res) => {
       tour: '<updated tour here>',
     },
   });
-});
-
-//deleting a specific tour
-app.delete('/api/v1/tours/:id', (req, res) => {
+};
+const deleteTour = (req, res) => {
   //convert the id param into a number
   const id = req.params.id * 1;
   //validating the id
@@ -110,7 +99,13 @@ app.delete('/api/v1/tours/:id', (req, res) => {
     status: 'success',
     data: null, //-> we won't send any data, because the resource no longer exists
   });
-});
+};
+
+app.get('/api/v1/tours', getAllTours);
+app.get('/api/v1/tours/:id', getTour);
+app.post('/api/v1/tours', createTour);
+app.patch('/api/v1/tours/:id', updateTour);
+app.delete('/api/v1/tours/:id', deleteTour);
 
 //establishing the port
 const port = 3000;
