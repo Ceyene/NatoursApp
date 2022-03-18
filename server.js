@@ -5,12 +5,8 @@ dotenv.config({ path: './config.env' });
 
 const app = require('./app');
 
-console.log(process.env);
-
 //establishing the port
 const port = process.env.PORT || 3000;
-
-console.log(app.get('env'));
 
 //CREATING SERVER
 app.listen(port, () => {
