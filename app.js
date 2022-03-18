@@ -9,9 +9,10 @@ const app = express();
 
 //MIDDLEWARES
 
-//3RD PARTY MIDDLEWARES
-//logging
-app.use(morgan('dev'));
+if (process.env.NODE_ENV === 'development') {
+  //logging only in development
+  app.use(morgan('dev')); //3RD PARTY MIDDLEWARE
+}
 
 //allow us to put body data inside the request (Express by itself doesn't do it)
 app.use(express.json());
