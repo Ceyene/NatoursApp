@@ -1,13 +1,18 @@
 //requiring dependencies
 const fs = require('fs');
 const express = require('express');
+const morgan = require('morgan'); //popular logging middleware
+
 const app = express();
 
-//middlewares
+//MIDDLEWARES
 
-//express.json() --> middleware that will allow us to put body data inside the request (Express by itself doesn't do it)
+//3RD PARTY MIDDLEWARES
+//logging
+app.use(morgan('dev'));
+//allow us to put body data inside the request (Express by itself doesn't do it)
 app.use(express.json());
-//my middlewares
+//MY MIDDLEWARES
 //saying hello
 app.use((req, res, next) => {
   console.log('Hello from the middleware!!');
@@ -27,7 +32,7 @@ const tours = JSON.parse(
 
 /////routing configuration/////
 
-//handlers for routes
+//ROUTE HANDLERS
 const getAllTours = (req, res) => {
   //send data to the client
   res.status(200).json({
@@ -117,7 +122,7 @@ const deleteTour = (req, res) => {
   });
 };
 
-//routes
+//ROUTES
 app.route('/api/v1/tours').get(getAllTours).post(createTour);
 app
   .route('/api/v1/tours/:id')
@@ -127,7 +132,8 @@ app
 
 //establishing the port
 const port = 3000;
-//creating server
+
+//CREATING SERVER
 app.listen(port, () => {
   console.log(`App running on port ${port}`);
 });
