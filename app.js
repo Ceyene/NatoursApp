@@ -1,11 +1,24 @@
 //requiring dependencies
 const fs = require('fs');
 const express = require('express');
-
 const app = express();
 
-//using middlewares --> express.json() --> middleware that will allow us to put body data inside the request (Express by itself doesn't do it)
+//middlewares
+
+//express.json() --> middleware that will allow us to put body data inside the request (Express by itself doesn't do it)
 app.use(express.json());
+//my middlewares
+//saying hello
+app.use((req, res, next) => {
+  console.log('Hello from the middleware!!');
+  next();
+});
+//adding the request time to all requests
+app.use((req, res, next) => {
+  //defining a property in the request called requestTime
+  req.requestTime = new Date().toISOString();
+  next();
+});
 
 //reading the data we have (top level code) and parsing it from JSON to an array of JS objects
 const tours = JSON.parse(
@@ -19,6 +32,7 @@ const getAllTours = (req, res) => {
   //send data to the client
   res.status(200).json({
     status: 'success',
+    requestedAt: req.requestTime,
     results: tours.length, //when sending multiple results
     data: {
       tours, //tours: tours
