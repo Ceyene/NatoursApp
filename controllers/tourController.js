@@ -5,6 +5,21 @@ const tours = JSON.parse(
   fs.readFileSync(`${__dirname}/../dev-data/data/tours-simple.json`)
 );
 
+//validating the ID
+exports.checkID = (req, res, next, val) => {
+  console.log(`The tour ID is: ${val}`);
+  //convert the id into a number
+  const id = req.params.id * 1;
+  //check if the id exists in our "database" file
+  if (!id || id > tours.length) {
+    return res.status(404).json({
+      status: 'fail',
+      message: 'Invalid ID',
+    });
+  }
+  next();
+};
+
 //TOURS ROUTE HANDLERS
 exports.getAllTours = (req, res) => {
   //send data to the client
@@ -18,16 +33,7 @@ exports.getAllTours = (req, res) => {
   });
 };
 exports.getTour = (req, res) => {
-  console.log(req.params);
-  //convert the id into a number
   const id = req.params.id * 1;
-  //check if the id exists in our "database" file
-  if (!id || id > tours.length) {
-    return res.status(404).json({
-      status: 'fail',
-      message: 'Invalid ID',
-    });
-  }
   //search for the tour that matches with the id
   const tour = tours.find((el) => el.id == id);
   //send specified tour to the client
@@ -62,15 +68,6 @@ exports.createTour = (req, res) => {
   );
 };
 exports.updateTour = (req, res) => {
-  //convert the id param into a number
-  const id = req.params.id * 1;
-  //validating the id
-  if (!id || id > tours.length) {
-    return res.status(404).json({
-      status: 'fail',
-      message: 'Invalid ID',
-    });
-  }
   res.status(200).json({
     status: 'success',
     data: {
@@ -79,15 +76,6 @@ exports.updateTour = (req, res) => {
   });
 };
 exports.deleteTour = (req, res) => {
-  //convert the id param into a number
-  const id = req.params.id * 1;
-  //validating the id
-  if (!id || id > tours.length) {
-    return res.status(404).json({
-      status: 'fail',
-      message: 'Invalid ID',
-    });
-  }
   //status = 204 ---> No Content
   res.status(204).json({
     status: 'success',
