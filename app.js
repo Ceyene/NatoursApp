@@ -16,6 +16,9 @@ app.use(morgan('dev'));
 //allow us to put body data inside the request (Express by itself doesn't do it)
 app.use(express.json());
 
+//allow us to serve static files
+app.use(express.static(`${__dirname}/public`));
+
 //MY MIDDLEWARES
 //saying hello
 app.use((req, res, next) => {
