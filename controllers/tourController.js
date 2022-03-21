@@ -2,28 +2,43 @@
 const Tour = require('./../models/tourModel');
 
 //TOURS ROUTE HANDLERS
-exports.getAllTours = (req, res) => {
-  //send data to the client
-  res.status(200).json({
-    status: 'success'
-    // requestedAt: req.requestTime,
-    // results: tours.length, //when sending multiple results
-    // data: {
-    //   tours //tours: tours
-    // }
-  });
+exports.getAllTours = async (req, res) => {
+  try {
+    const tours = await Tour.find();
+
+    //send data to the client
+    res.status(200).json({
+      status: 'success',
+      results: tours.length, //when sending multiple results
+      data: {
+        tours //tours: tours
+      }
+    });
+  } catch (error) {
+    res.status(404).json({
+      status: 'fail',
+      message: error
+    });
+  }
 };
-exports.getTour = (req, res) => {
-  const id = req.params.id * 1;
-  //search for the tour that matches with the id
-  // const tour = tours.find(el => el.id == id);
-  // //send specified tour to the client
-  // res.status(200).json({
-  //   status: 'success',
-  //   data: {
-  //     tour
-  //   }
-  // });
+exports.getTour = async (req, res) => {
+  try {
+    const tour = await Tour.findById(req.params.id);
+    //Tour.findOne({_id: req.params.id})
+
+    //send specified tour to the client
+    res.status(200).json({
+      status: 'success',
+      data: {
+        tour
+      }
+    });
+  } catch (error) {
+    res.status(404).json({
+      status: 'fail',
+      message: error
+    });
+  }
 };
 exports.createTour = async (req, res) => {
   try {
