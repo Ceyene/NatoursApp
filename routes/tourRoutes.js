@@ -5,7 +5,8 @@ const {
   createTour,
   getTour,
   updateTour,
-  deleteTour
+  deleteTour,
+  aliasTopTours
 } = require('./../controllers/tourController');
 
 //TOURS ROUTER
@@ -14,6 +15,9 @@ const router = express.Router();
 //PARAM MIDDLEWARES
 //validating id
 //router.param('id', checkID);
+
+//ALIAS FOR POPULAR SEARCH
+router.route('/top-5-cheap').get(aliasTopTours, getAllTours);
 
 //ROUTES
 //tours routes

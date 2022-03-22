@@ -1,6 +1,14 @@
 //dependencies
 const Tour = require('./../models/tourModel');
 
+//MIDDLEWARE: ADDING ALIAS FOR POPULAR SEARCH
+exports.aliasTopTours = (req, res, next) => {
+  req.query.limit = 5;
+  req.query.sort = '-ratingsAverage,price';
+  req.query.fields = 'name,price,ratingsAverage,summary,difficulty';
+  next();
+};
+
 //TOURS ROUTE HANDLERS
 exports.getAllTours = async (req, res) => {
   try {
