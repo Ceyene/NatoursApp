@@ -5,16 +5,20 @@ const Tour = require('./../models/tourModel');
 exports.getAllTours = async (req, res) => {
   try {
     //BUILDING QUERY
-    //1) Filtering
+    //1a) Filtering
     const queryObj = { ...req.query }; //creating a copy of the req.query object
     const excludedFields = ['page', 'sort', 'limit', 'fields']; //creting an array of the fields to be excluded
     excludedFields.forEach(field => delete queryObj[field]); //removing the fields from the query object
 
-    //2) Advanced filtering
+    //1b) Advanced filtering
     let queryStr = JSON.stringify(queryObj); //convert the object to a string
     queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, match => `$${match}`); //we need to find the parameters added in the url and replace them with the operators with $
-    const query = Tour.find(JSON.parse(queryStr)); //getting the filtered query for tours
+    let query = Tour.find(JSON.parse(queryStr)); //getting the filtered query for tours
 
+    //2) Sorting
+    if (req.query.sort) {
+      query = query.sort(req.query.sort); //mongoose will automatically sort the data according to the property mentioned
+    }
     //EXECUTING QUERY
     const tours = await query; //getting the final query for tours
 
