@@ -20,7 +20,7 @@ exports.getAllTours = async (req, res) => {
       const sortBy = req.query.sort.split(',').join(' '); //return an string of all the fields
       query = query.sort(sortBy); //mongoose will automatically sort the data according to the property/ies mentioned
     } else {
-      query = query.sort('-createdAt'); //sorting by default the most recent tours
+      query = query.sort('_id'); //sorting by default the tours by id
     }
 
     //3) Field limiting: to see only some fields of the tours in a request
@@ -31,6 +31,19 @@ exports.getAllTours = async (req, res) => {
       query = query.select('-__v'); //exclude the __v, it's for internal use in mongoose, not for the user
     }
 
+    //4) Pagination
+    const page = req.query.page * 1 || 1; //converting the page to a number and defining a default page
+    const limit = req.query.limit * 1 || 100; //defining a default limit of tours to show if the user didn't specify any
+    const skip = (page - 1) * limit; //calculating the skip value from the page asked
+    //creating the paginated query
+    query = query.skip(skip).limit(limit);
+    //validating if the page exists or not
+    if (req.query.page) {
+      const numTours = await Tour.countDocuments();
+      if (skip >= numTours) {
+        throw new Error('Sorry. This page does not exist. Try again!');
+      }
+    }
     //EXECUTING QUERY
     const tours = await query; //getting the final query for tours
 
@@ -45,7 +58,7 @@ exports.getAllTours = async (req, res) => {
   } catch (error) {
     res.status(404).json({
       status: 'fail',
-      message: error
+      message: error.message
     });
   }
 };
