@@ -17,7 +17,8 @@ exports.getAllTours = async (req, res) => {
 
     //2) Sorting
     if (req.query.sort) {
-      query = query.sort(req.query.sort); //mongoose will automatically sort the data according to the property mentioned
+      const sortBy = req.query.sort.split(',').join(' '); //return an string of all the fields
+      query = query.sort(sortBy); //mongoose will automatically sort the data according to the property/ies mentioned
     }
     //EXECUTING QUERY
     const tours = await query; //getting the final query for tours
