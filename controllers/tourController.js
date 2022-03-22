@@ -79,10 +79,18 @@ exports.updateTour = async (req, res) => {
     });
   }
 };
-exports.deleteTour = (req, res) => {
-  //status = 204 ---> No Content
-  res.status(204).json({
-    status: 'success',
-    data: null //-> we won't send any data, because the resource no longer exists
-  });
+exports.deleteTour = async (req, res) => {
+  try {
+    const tour = await Tour.findByIdAndDelete(req.params.id);
+    //status = 204 ---> No Content
+    res.status(204).json({
+      status: 'success',
+      data: null //-> we won't send any data, because the resource no longer exists
+    });
+  } catch (error) {
+    res.status(400).json({
+      status: 'fail',
+      message: error
+    });
+  }
 };
