@@ -19,6 +19,8 @@ exports.getAllTours = async (req, res) => {
     if (req.query.sort) {
       const sortBy = req.query.sort.split(',').join(' '); //return an string of all the fields
       query = query.sort(sortBy); //mongoose will automatically sort the data according to the property/ies mentioned
+    } else {
+      query = query.sort('-createdAt'); //sorting by default the most recent tours
     }
     //EXECUTING QUERY
     const tours = await query; //getting the final query for tours
