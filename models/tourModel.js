@@ -50,7 +50,8 @@ const tourSchema = new mongoose.Schema({
   images: [String],
   createdAt: {
     type: Date,
-    default: Date.now() //mongoose will convert it from miliseconds to date format
+    default: Date.now(), //mongoose will convert it from miliseconds to date format
+    select: false //createdAt will be hidden from the user
   },
   startDates: [Date] //also will be parsed by mongoose
 });

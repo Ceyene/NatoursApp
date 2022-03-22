@@ -22,6 +22,15 @@ exports.getAllTours = async (req, res) => {
     } else {
       query = query.sort('-createdAt'); //sorting by default the most recent tours
     }
+
+    //3) Field limiting: to see only some fields of the tours in a request
+    if (req.query.fields) {
+      const fields = req.query.fields.split(',').join(' ');
+      query = query.select(fields); //projecting
+    } else {
+      query = query.select('-__v'); //exclude the __v, it's for internal use in mongoose, not for the user
+    }
+
     //EXECUTING QUERY
     const tours = await query; //getting the final query for tours
 
