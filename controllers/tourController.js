@@ -5,18 +5,18 @@ const Tour = require('./../models/tourModel');
 exports.getAllTours = async (req, res) => {
   try {
     //BUILDING QUERY
-    //creating a copy of the req.query object
-    const queryObj = { ...req.query };
-    //creting an array of the fields to be excluded
-    const excludedFields = ['page', 'sort', 'limit', 'fields'];
-    //removing the fields from the query object
-    excludedFields.forEach(field => delete queryObj[field]);
-    //getting the filtered query for tours
-    const query = Tour.find(queryObj);
+    //1) Filtering
+    const queryObj = { ...req.query }; //creating a copy of the req.query object
+    const excludedFields = ['page', 'sort', 'limit', 'fields']; //creting an array of the fields to be excluded
+    excludedFields.forEach(field => delete queryObj[field]); //removing the fields from the query object
+
+    //2) Advanced filtering
+    let queryStr = JSON.stringify(queryObj); //convert the object to a string
+    queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, match => `$${match}`); //we need to find the parameters added in the url and replace them with the operators with $
+    const query = Tour.find(JSON.parse(queryStr)); //getting the filtered query for tours
 
     //EXECUTING QUERY
-    //getting the final query for tours
-    const tours = await query;
+    const tours = await query; //getting the final query for tours
 
     //SENDING RESPONSE
     res.status(200).json({
