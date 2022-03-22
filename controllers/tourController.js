@@ -4,16 +4,21 @@ const Tour = require('./../models/tourModel');
 //TOURS ROUTE HANDLERS
 exports.getAllTours = async (req, res) => {
   try {
+    //BUILDING QUERY
     //creating a copy of the req.query object
     const queryObj = { ...req.query };
     //creting an array of the fields to be excluded
     const excludedFields = ['page', 'sort', 'limit', 'fields'];
     //removing the fields from the query object
     excludedFields.forEach(field => delete queryObj[field]);
-    //getting the filtered query tours
-    const tours = await Tour.find(queryObj);
+    //getting the filtered query for tours
+    const query = Tour.find(queryObj);
 
-    //send data to the client
+    //EXECUTING QUERY
+    //getting the final query for tours
+    const tours = await query;
+
+    //SENDING RESPONSE
     res.status(200).json({
       status: 'success',
       results: tours.length, //when sending multiple results
