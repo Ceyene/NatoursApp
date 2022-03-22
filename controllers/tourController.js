@@ -1,5 +1,6 @@
 //dependencies
 const Tour = require('./../models/tourModel');
+const APIFeatures = require('./../utils/apiFeatures');
 
 //MIDDLEWARE: ADDING ALIAS FOR POPULAR SEARCH
 exports.aliasTopTours = (req, res, next) => {
@@ -12,48 +13,14 @@ exports.aliasTopTours = (req, res, next) => {
 //TOURS ROUTE HANDLERS
 exports.getAllTours = async (req, res) => {
   try {
-    //BUILDING QUERY
-    //1a) Filtering
-    const queryObj = { ...req.query }; //creating a copy of the req.query object
-    const excludedFields = ['page', 'sort', 'limit', 'fields']; //creting an array of the fields to be excluded
-    excludedFields.forEach(field => delete queryObj[field]); //removing the fields from the query object
-
-    //1b) Advanced filtering
-    let queryStr = JSON.stringify(queryObj); //convert the object to a string
-    queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, match => `$${match}`); //we need to find the parameters added in the url and replace them with the operators with $
-    let query = Tour.find(JSON.parse(queryStr)); //getting the filtered query for tours
-
-    //2) Sorting
-    if (req.query.sort) {
-      const sortBy = req.query.sort.split(',').join(' '); //return an string of all the fields
-      query = query.sort(sortBy); //mongoose will automatically sort the data according to the property/ies mentioned
-    } else {
-      query = query.sort('_id'); //sorting by default the tours by id
-    }
-
-    //3) Field limiting: to see only some fields of the tours in a request
-    if (req.query.fields) {
-      const fields = req.query.fields.split(',').join(' ');
-      query = query.select(fields); //projecting
-    } else {
-      query = query.select('-__v'); //exclude the __v, it's for internal use in mongoose, not for the user
-    }
-
-    //4) Pagination
-    const page = req.query.page * 1 || 1; //converting the page to a number and defining a default page
-    const limit = req.query.limit * 1 || 100; //defining a default limit of tours to show if the user didn't specify any
-    const skip = (page - 1) * limit; //calculating the skip value from the page asked
-    //creating the paginated query
-    query = query.skip(skip).limit(limit);
-    //validating if the page exists or not
-    if (req.query.page) {
-      const numTours = await Tour.countDocuments();
-      if (skip >= numTours) {
-        throw new Error('Sorry. This page does not exist. Try again!');
-      }
-    }
     //EXECUTING QUERY
-    const tours = await query; //getting the final query for tours
+    //create an object, instance from the APIFeatures class, to parse a query object (Tour.find()) and the query string from the url (given by Express)
+    const features = new APIFeatures(Tour.find(), req.query)
+      .filter()
+      .sort() // these methods manipulate the query
+      .limitFields()
+      .paginate();
+    const tours = await features.query; //awaiting the final query for tours and putting it inside the tours variable
 
     //SENDING RESPONSE
     res.status(200).json({
