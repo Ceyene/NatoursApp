@@ -107,6 +107,13 @@ tourSchema.post(/^find/, function(docs, next) {
 });
 */
 
+//AGGREGATION MIDDLEWARE - Pre Middleware - associated to aggregate() method
+//removing from the output all the secret tours
+tourSchema.pre('aggregate', function(next) {
+  this.pipeline().unshift({ $match: { secretTour: { $ne: true } } }); //this will point to the aggregation object
+  next();
+});
+
 //creating a model out of the previous schema
 const Tour = mongoose.model('Tour', tourSchema);
 
