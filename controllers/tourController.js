@@ -112,6 +112,7 @@ exports.deleteTour = async (req, res) => {
 };
 
 //Aggregation Pipeline: Matching and Grouping
+//Getting Tour Stats, ordered by difficulty
 exports.getTourStats = async (req, res) => {
   try {
     //we can use our Model created with Mongoose for this aggregation pipeline
@@ -136,10 +137,6 @@ exports.getTourStats = async (req, res) => {
       {
         //sorts documents according to the indicated operator
         $sort: { avgPrice: 1 } //use value of 1 for ascending sorting
-      },
-      {
-        //stages can be repeated in one pipeline
-        $match: { _id: { $ne: 'EASY' } } //not going to show the EASY tours stats
       }
     ]); //each object in this array will be one stage
 
@@ -148,6 +145,68 @@ exports.getTourStats = async (req, res) => {
       status: 'success',
       data: {
         stats //stats : stats
+      }
+    });
+  } catch (error) {
+    res.status(400).json({
+      status: 'fail',
+      message: error
+    });
+  }
+};
+
+//Aggregation Pipelines: Unwinding and Projecting
+//Calculating the busiest month of the year --> Business problem to solve
+exports.getMonthlyPlan = async (req, res) => {
+  try {
+    const year = req.params.year * 1; //getting the year from the url parameter and transforming it into a number
+
+    const plan = await Tour.aggregate([
+      {
+        //deconstructs an array field and output one document for each element of the array
+        $unwind: '$startDates'
+      },
+      {
+        //it will query and select documents
+        $match: {
+          startDates: {
+            $gte: new Date(`${year}-01-01`),
+            $lte: new Date(`${year}-12-31`)
+          }
+        }
+      },
+      {
+        //it will group the documents according to the month of the planned tours
+        $group: {
+          _id: { $month: '$startDates' },
+          numTourStarts: { $sum: 1 },
+          tours: { $push: '$name' }
+        }
+      },
+      {
+        //it will convert the number of the month to the name in string, in the id
+        $addFields: { month: '$_id' }
+      },
+      {
+        //not going to show the _id field to the client
+        $project: {
+          _id: 0 //not going to show the _id field, with 1 it would show it up
+        }
+      },
+      {
+        //sorting by the number of tours in each month
+        $sort: { numTourStarts: -1 } //will show them in descending order, starting with the highest
+      },
+      {
+        //it will limit the amount of results
+        $limit: 12
+      }
+    ]);
+    //sending data to the client
+    res.status(200).json({
+      status: 'success',
+      data: {
+        plan //plan : plan
       }
     });
   } catch (error) {

@@ -8,7 +8,8 @@ const {
   updateTour,
   deleteTour,
   aliasTopTours,
-  getTourStats
+  getTourStats,
+  getMonthlyPlan
 } = require('./../controllers/tourController');
 
 //TOURS ROUTER
@@ -23,6 +24,8 @@ router.route('/top-5-cheap').get(aliasTopTours, getAllTours);
 
 //AGGREGATION PIPELINE: Getting tours by groups according price and ratings
 router.route('/tour-stats').get(getTourStats);
+//AGGREGATION PIPELINE: Getting tours by months of the year
+router.route('/monthly-plan/:year').get(getMonthlyPlan);
 
 //ROUTES
 //tours routes
