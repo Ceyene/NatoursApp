@@ -123,8 +123,8 @@ exports.getTourStats = async (req, res) => {
       {
         //allows to group documents using accumulators
         $group: {
-          _id: null, //id can be the field we can group by the documents, but now want only one resulting doc
-          //_id: { $toUpper: '$difficulty' }, //several stats, one for each existent value: EASY, MEDIUM, DIFFICULT
+          //_id: null, //id can be the field we can group by the documents, but now want only one resulting doc
+          _id: { $toUpper: '$difficulty' }, //several stats, one for each existent value: EASY, MEDIUM, DIFFICULT
           numTours: { $sum: 1 }, //for each document that goes through the pipeline, it will add 1 (result will be 9)
           numRatings: { $sum: '$ratingsQuantity' },
           avgRating: { $avg: '$ratingsAverage' },
@@ -132,6 +132,14 @@ exports.getTourStats = async (req, res) => {
           minPrice: { $min: '$price' },
           maxPrice: { $max: '$price' }
         }
+      },
+      {
+        //sorts documents according to the indicated operator
+        $sort: { avgPrice: 1 } //use value of 1 for ascending sorting
+      },
+      {
+        //stages can be repeated in one pipeline
+        $match: { _id: { $ne: 'EASY' } } //not going to show the EASY tours stats
       }
     ]); //each object in this array will be one stage
 
