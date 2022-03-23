@@ -52,7 +52,7 @@ exports.getTour = async (req, res) => {
   } catch (error) {
     res.status(404).json({
       status: 'fail',
-      message: error
+      message: error.message
     });
   }
 };
@@ -72,7 +72,7 @@ exports.createTour = async (req, res) => {
   } catch (err) {
     res.status(400).json({
       status: 'fail',
-      message: err
+      message: err.message
     });
   }
 };
@@ -91,7 +91,7 @@ exports.updateTour = async (req, res) => {
   } catch (error) {
     res.status(400).json({
       status: 'fail',
-      message: 'Invalid data sent' //don't use this, send meaningful errors to the client
+      message: error.message //send meaningful errors to the client
     });
   }
 };
@@ -106,7 +106,7 @@ exports.deleteTour = async (req, res) => {
   } catch (error) {
     res.status(400).json({
       status: 'fail',
-      message: error
+      message: error.message
     });
   }
 };
@@ -150,7 +150,7 @@ exports.getTourStats = async (req, res) => {
   } catch (error) {
     res.status(400).json({
       status: 'fail',
-      message: error
+      message: error.message
     });
   }
 };
@@ -212,7 +212,7 @@ exports.getMonthlyPlan = async (req, res) => {
   } catch (error) {
     res.status(400).json({
       status: 'fail',
-      message: error
+      message: error.message
     });
   }
 };
