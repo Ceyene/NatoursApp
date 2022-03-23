@@ -1,6 +1,7 @@
 //dependencies
 const mongoose = require('mongoose');
 const slugify = require('slugify');
+const validator = require('validator');
 
 //creating a schema for our db documents
 const tourSchema = new mongoose.Schema(
@@ -28,7 +29,11 @@ const tourSchema = new mongoose.Schema(
       enum: {
         values: ['easy', 'medium', 'difficult'],
         message: 'Difficulty is either: easy, medium or difficult' //data validator
-      }
+      },
+      validate: [
+        validator.isAlpha,
+        'Tour name must only contain alphabetical characters'
+      ] //validator.js -> checks if all the characters in a string are letters
     },
     ratingsAverage: {
       type: Number,
