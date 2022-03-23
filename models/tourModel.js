@@ -1,60 +1,90 @@
 //dependencies
 const mongoose = require('mongoose');
+const slugify = require('slugify');
 
 //creating a schema for our db documents
-const tourSchema = new mongoose.Schema({
-  name: {
-    type: String,
-    required: [true, 'A tour must have a name'],
-    unique: true,
-    trim: true //removes all white spaces at the beginning and the end
+const tourSchema = new mongoose.Schema(
+  {
+    name: {
+      type: String,
+      required: [true, 'A tour must have a name'],
+      unique: true,
+      trim: true //removes all white spaces at the beginning and the end
+    },
+    slug: String,
+    duration: {
+      type: Number,
+      required: [true, 'A tour must have a duration']
+    },
+    maxGroupSize: {
+      type: Number,
+      required: [true, 'A tour must have a group size']
+    },
+    difficulty: {
+      type: String,
+      required: [true, 'A tour must have a difficulty']
+    },
+    ratingsAverage: {
+      type: Number,
+      default: 4.5
+    },
+    ratingsQuantity: {
+      type: Number,
+      default: 0
+    },
+    price: {
+      type: Number,
+      required: [true, 'A tour must have a price']
+    },
+    priceDiscount: Number,
+    summary: {
+      type: String,
+      trim: true,
+      required: [true, 'A tour must have a summary']
+    },
+    description: {
+      type: String,
+      trim: true
+    },
+    imageCover: {
+      type: String,
+      required: [true, 'A tour must have a cover image']
+    },
+    images: [String],
+    createdAt: {
+      type: Date,
+      default: Date.now(), //mongoose will convert it from miliseconds to date format
+      select: false //createdAt will be hidden from the user
+    },
+    startDates: [Date] //also will be parsed by mongoose
   },
-  duration: {
-    type: Number,
-    required: [true, 'A tour must have a duration']
-  },
-  maxGroupSize: {
-    type: Number,
-    required: [true, 'A tour must have a group size']
-  },
-  difficulty: {
-    type: String,
-    required: [true, 'A tour must have a difficulty']
-  },
-  ratingsAverage: {
-    type: Number,
-    default: 4.5
-  },
-  ratingsQuantity: {
-    type: Number,
-    default: 0
-  },
-  price: {
-    type: Number,
-    required: [true, 'A tour must have a price']
-  },
-  priceDiscount: Number,
-  summary: {
-    type: String,
-    trim: true,
-    required: [true, 'A tour must have a summary']
-  },
-  description: {
-    type: String,
-    trim: true
-  },
-  imageCover: {
-    type: String,
-    required: [true, 'A tour must have a cover image']
-  },
-  images: [String],
-  createdAt: {
-    type: Date,
-    default: Date.now(), //mongoose will convert it from miliseconds to date format
-    select: false //createdAt will be hidden from the user
-  },
-  startDates: [Date] //also will be parsed by mongoose
+  {
+    toJSON: { virtuals: true }, //when data outputted as JSON: show virtual properties
+    toObject: { virtuals: true } //when data outputted as Object: show virtual properties
+  }
+);
+
+//creating virtual property: tour duration in weeks
+tourSchema.virtual('durationWeeks').get(function() {
+  return this.duration / 7; //duration in days, divided by 7
 });
+
+//Document Middleware - Pre Middleware - associated to the save event
+//Runs before save() and create()
+tourSchema.pre('save', function(next) {
+  this.slug = slugify(this.name, { lower: true }); //this -> currently processed document, the one that is being saved to the db
+  next();
+});
+
+/*
+//Document Middleware - Post Middleware - associated to the save event
+//Runs after all pre middleware functions have completed
+tourSchema.post('save', function(doc, next) {
+  console.log(doc);
+  next();
+});
+*/
+
 //creating a model out of the previous schema
 const Tour = mongoose.model('Tour', tourSchema);
 
