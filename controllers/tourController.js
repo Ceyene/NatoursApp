@@ -110,3 +110,42 @@ exports.deleteTour = async (req, res) => {
     });
   }
 };
+
+//Aggregation Pipeline: Matching and Grouping
+exports.getTourStats = async (req, res) => {
+  try {
+    //we can use our Model created with Mongoose for this aggregation pipeline
+    const stats = await Tour.aggregate([
+      {
+        //similar to a filter object in MongoDB
+        $match: { ratingsAverage: { $gte: 4.5 } }
+      },
+      {
+        //allows to group documents using accumulators
+        $group: {
+          _id: null, //id can be the field we can group by the documents, but now want only one resulting doc
+          //_id: { $toUpper: '$difficulty' }, //several stats, one for each existent value: EASY, MEDIUM, DIFFICULT
+          numTours: { $sum: 1 }, //for each document that goes through the pipeline, it will add 1 (result will be 9)
+          numRatings: { $sum: '$ratingsQuantity' },
+          avgRating: { $avg: '$ratingsAverage' },
+          avgPrice: { $avg: '$price' },
+          minPrice: { $min: '$price' },
+          maxPrice: { $max: '$price' }
+        }
+      }
+    ]); //each object in this array will be one stage
+
+    //send data to the client
+    res.status(200).json({
+      status: 'success',
+      data: {
+        stats //stats : stats
+      }
+    });
+  } catch (error) {
+    res.status(400).json({
+      status: 'fail',
+      message: error
+    });
+  }
+};
