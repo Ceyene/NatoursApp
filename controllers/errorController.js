@@ -7,6 +7,13 @@ const handleCastErrorDB = err => {
   return new AppError(message, 400);
 };
 
+//Handling Duplicate Database Fields
+const handleDuplicateFieldsDB = err => {
+  const value = Object.values(err.keyValue)[0];
+  const message = `Duplicate field value: ${value}. Please use another value.`;
+  return new AppError(message, 400);
+};
+
 //Sending different errors to the client, according to the environment
 const sendErrorDev = (err, res) => {
   res.status(err.statusCode).json({
@@ -49,6 +56,8 @@ module.exports = (err, req, res, next) => {
     let error = Object.assign(err);
     //Invalid Database ID Error
     if (error.name === 'CastError') error = handleCastErrorDB(error);
+    //Duplicate DB Fields Error
+    if (error.code === 11000) error = handleDuplicateFieldsDB(error);
     sendErrorProd(error, res);
   }
 };
