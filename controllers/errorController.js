@@ -1,3 +1,12 @@
+//dependencies
+const AppError = require('../utils/appError');
+
+//Handling Invalid Database ID Errors
+const handleCastErrorDB = err => {
+  const message = `Invalid ${err.path}: ${err.value}.`;
+  return new AppError(message, 400);
+};
+
 //Sending different errors to the client, according to the environment
 const sendErrorDev = (err, res) => {
   res.status(err.statusCode).json({
@@ -37,6 +46,9 @@ module.exports = (err, req, res, next) => {
   if (process.env.NODE_ENV === 'development') {
     sendErrorDev(err, res);
   } else if (process.env.NODE_ENV === 'production') {
-    sendErrorProd(err, res);
+    let error = Object.assign(err);
+    //Invalid Database ID Error
+    if (error.name === 'CastError') error = handleCastErrorDB(error);
+    sendErrorProd(error, res);
   }
 };
