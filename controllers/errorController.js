@@ -14,6 +14,13 @@ const handleDuplicateFieldsDB = err => {
   return new AppError(message, 400);
 };
 
+//Handling Mongoose Validation Errors
+const handleValidationErrorDB = err => {
+  const errors = Object.values(err.errors).map(el => el.message);
+  const message = `Please correct the following errors: ${errors.join('. ')}.`;
+  return new AppError(message, 400);
+};
+
 //Sending different errors to the client, according to the environment
 const sendErrorDev = (err, res) => {
   res.status(err.statusCode).json({
@@ -58,6 +65,9 @@ module.exports = (err, req, res, next) => {
     if (error.name === 'CastError') error = handleCastErrorDB(error);
     //Duplicate DB Fields Error
     if (error.code === 11000) error = handleDuplicateFieldsDB(error);
+    //Mongoose Validation Error
+    if (error.name === 'ValidationError')
+      error = handleValidationErrorDB(error);
     sendErrorProd(error, res);
   }
 };
