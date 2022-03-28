@@ -20,12 +20,6 @@ app.use(express.json());
 //allow us to serve static files
 app.use(express.static(`${__dirname}/public`));
 
-//MY MIDDLEWARES
-//saying hello
-app.use((req, res, next) => {
-  console.log('Hello from the middleware!!');
-  next();
-});
 //adding the request time to all requests
 app.use((req, res, next) => {
   //defining a property in the request called requestTime
@@ -36,5 +30,13 @@ app.use((req, res, next) => {
 //MOUNTING ROUTERS
 app.use('/api/v1/tours', tourRouter);
 app.use('/api/v1/users', userRouter);
+
+//UNHANDLED ROUTES HANDLER
+app.all('*', (req, res, next) => {
+  res.status(404).json({
+    status: 'fail',
+    message: `Can't find ${req.originalUrl} on this server!`
+  });
+});
 
 module.exports = app;
