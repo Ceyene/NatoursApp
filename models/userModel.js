@@ -1,4 +1,5 @@
 //dependencies
+const crypto = require('crypto');
 const mongoose = require('mongoose');
 const validator = require('validator');
 const bcrypt = require('bcryptjs');
@@ -43,7 +44,9 @@ const userSchema = new mongoose.Schema({
       message: 'Passwords are not the same'
     } //custom validator
   },
-  passwordChangedAt: Date
+  passwordChangedAt: Date,
+  passwordResetToken: String,
+  passwordResetExpires: Date
 });
 
 //encrypting passwords -> pre-middleware associated to "save" event
@@ -83,6 +86,23 @@ userSchema.methods.changedPasswordAfter = function(JWTTimestamp) {
 
   //if didn't changed the password:
   return false;
+};
+
+//Creating a password reset random token
+userSchema.methods.createPasswordResetToken = function() {
+  const resetToken = crypto.randomBytes(32).toString('hex');
+
+  //saving in the db an encrypted version of it
+  this.passwordResetToken = crypto
+    .createHash('sha256')
+    .update(resetToken)
+    .digest('hex');
+
+  //establishing an expiring date to make it safer
+  this.passwordResetExpires = Date.now() + 10 * 60 * 1000;
+
+  //returning the original token
+  return resetToken;
 };
 
 //creating a model out of the previous schema

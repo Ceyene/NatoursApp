@@ -7,7 +7,12 @@ const {
   updateUser,
   deleteUser
 } = require('./../controllers/userController');
-const { signUp, logIn } = require('./../controllers/authController');
+const {
+  signUp,
+  logIn,
+  forgotPassword,
+  resetPassword
+} = require('./../controllers/authController');
 
 //USERS ROUTER
 const router = express.Router();
@@ -16,6 +21,10 @@ const router = express.Router();
 //users routes
 router.post('/signup', signUp); //signup is a special endpoint
 router.post('/login', logIn); //login is a special endpoint
+
+router.post('/forgotPassword', forgotPassword); //forgotPassword is a special endpoint
+router.patch('/resetPassword/:token', resetPassword); //resetPassword is a special endpoint
+
 router
   .route('/')
   .get(getAllUsers)
