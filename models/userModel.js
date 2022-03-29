@@ -23,6 +23,7 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: [true, 'Please, create your password'], //data validator
     minlength: 14,
+    select: false, //don't show it in the response object
     trim: true //removes all white spaces at the beginning and the end
   },
   passwordConfirm: {
@@ -54,6 +55,13 @@ userSchema.pre('save', async function(next) {
   next();
 });
 
+//INSTANCE METHOD: Checking if password is valid
+userSchema.methods.correctPassword = async function(
+  candidatePassword,
+  userPassword
+) {
+  return await bcrypt.compare(candidatePassword, userPassword);
+};
 //creating a model out of the previous schema
 const User = mongoose.model('User', userSchema);
 
