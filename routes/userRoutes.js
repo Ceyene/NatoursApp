@@ -7,7 +7,7 @@ const {
   updateUser,
   deleteUser
 } = require('./../controllers/userController');
-const { signUp } = require('./../controllers/authController');
+const { signUp, logIn } = require('./../controllers/authController');
 
 //USERS ROUTER
 const router = express.Router();
@@ -15,6 +15,7 @@ const router = express.Router();
 //ROUTES
 //users routes
 router.post('/signup', signUp); //signup is a special endpoint
+router.post('/login', logIn); //login is a special endpoint
 router
   .route('/')
   .get(getAllUsers)
