@@ -21,6 +21,16 @@ const handleValidationErrorDB = err => {
   return new AppError(message, 400);
 };
 
+//Handling JWT Validation Errors
+const handleJWTError = () => {
+  return new AppError('Invalid token. Please login again.', 401);
+};
+
+//Handling JWT Expired Errors
+const handleJWTExpiredError = () => {
+  return new AppError('Your token has expired. Please login again.', 401);
+};
+
 //Sending different errors to the client, according to the environment
 const sendErrorDev = (err, res) => {
   res.status(err.statusCode).json({
@@ -68,6 +78,10 @@ module.exports = (err, req, res, next) => {
     //Mongoose Validation Error
     if (error.name === 'ValidationError')
       error = handleValidationErrorDB(error);
+    //JWT Validation Error
+    if (error.name === 'JsonWebTokenError') error = handleJWTError();
+    //JWT Expired Error
+    if (error.name === 'TokenExpiredError') error = handleJWTExpiredError();
     sendErrorProd(error, res);
   }
 };

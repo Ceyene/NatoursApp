@@ -1,4 +1,5 @@
 //dependencies
+const { promisify } = require('util');
 const jwt = require('jsonwebtoken');
 const User = require('./../models/userModel');
 const catchAsync = require('./../utils/catchAsync');
@@ -17,7 +18,8 @@ exports.signUp = catchAsync(async (req, res, next) => {
     name: req.body.name,
     email: req.body.email,
     password: req.body.password,
-    passwordConfirm: req.body.passwordConfirm
+    passwordConfirm: req.body.passwordConfirm,
+    passwordChangedAt: req.body.passwordChangedAt
   });
 
   //creating new JWT for logging in the new user
@@ -33,6 +35,7 @@ exports.signUp = catchAsync(async (req, res, next) => {
   });
 });
 
+//log in handler
 exports.logIn = catchAsync(async (req, res, next) => {
   const { email, password } = req.body;
 
@@ -53,4 +56,44 @@ exports.logIn = catchAsync(async (req, res, next) => {
     status: 'success',
     token
   });
+});
+
+//implementing protected routes
+exports.protect = catchAsync(async (req, res, next) => {
+  //1) Getting token and checking if it's present
+  let token;
+  if (
+    req.headers.authorization &&
+    req.headers.authorization.startsWith('Bearer')
+  ) {
+    token = req.headers.authorization.split(' ')[1];
+  }
+  if (!token) {
+    return next(
+      new AppError('You are not logged in. Please log in to get access', 401)
+    );
+  }
+  //2) Token Verification
+  //gettting the decoded data of the token
+  const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
+
+  //3) Checking if user still exists
+  const freshUser = await User.findById(decoded.id);
+
+  if (!freshUser) {
+    return next(
+      new AppError('The user owner of this token does not longer exist.', 401)
+    );
+  }
+
+  //4) Checking if user changed password after JWT was issued
+  if (freshUser.changedPasswordAfter(decoded.iat)) {
+    return next(
+      new AppError('User recently changed password! Please, login again', 401)
+    );
+  }
+
+  //5) Grant access to protected route
+  req.user = freshUser; //sending this freshUser to the request object, so it will be passed to the next middleware
+  next();
 });

@@ -37,7 +37,8 @@ const userSchema = new mongoose.Schema({
       },
       message: 'Passwords are not the same'
     } //custom validator
-  }
+  },
+  passwordChangedAt: Date
 });
 
 //encrypting passwords -> pre-middleware associated to "save" event
@@ -55,13 +56,30 @@ userSchema.pre('save', async function(next) {
   next();
 });
 
-//INSTANCE METHOD: Checking if password is valid
+// INSTANCE METHODS //
+
+//Checking if password is valid
 userSchema.methods.correctPassword = async function(
   candidatePassword,
   userPassword
 ) {
   return await bcrypt.compare(candidatePassword, userPassword);
 };
+
+//Checking if user changed password after JWT was issued
+userSchema.methods.changedPasswordAfter = function(JWTTimestamp) {
+  if (this.passwordChangedAt) {
+    const changedTimestamp = parseInt(
+      this.passwordChangedAt.getTime() / 1000,
+      10
+    );
+    return JWTTimestamp < changedTimestamp;
+  }
+
+  //if didn't changed the password:
+  return false;
+};
+
 //creating a model out of the previous schema
 const User = mongoose.model('User', userSchema);
 
