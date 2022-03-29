@@ -19,7 +19,8 @@ exports.signUp = catchAsync(async (req, res, next) => {
     email: req.body.email,
     password: req.body.password,
     passwordConfirm: req.body.passwordConfirm,
-    passwordChangedAt: req.body.passwordChangedAt
+    passwordChangedAt: req.body.passwordChangedAt,
+    role: req.body.role
   });
 
   //creating new JWT for logging in the new user
@@ -78,22 +79,36 @@ exports.protect = catchAsync(async (req, res, next) => {
   const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
 
   //3) Checking if user still exists
-  const freshUser = await User.findById(decoded.id);
+  const currentUser = await User.findById(decoded.id);
 
-  if (!freshUser) {
+  if (!currentUser) {
     return next(
       new AppError('The user owner of this token does not longer exist.', 401)
     );
   }
 
   //4) Checking if user changed password after JWT was issued
-  if (freshUser.changedPasswordAfter(decoded.iat)) {
+  if (currentUser.changedPasswordAfter(decoded.iat)) {
     return next(
       new AppError('User recently changed password! Please, login again', 401)
     );
   }
 
   //5) Grant access to protected route
-  req.user = freshUser; //sending this freshUser to the request object, so it will be passed to the next middleware
+  req.user = currentUser; //sending this currentUser to the request object, so it will be passed to the next middleware
   next();
 });
+
+//Authorization: restricting for admin and lead-guides certain functionalities in the app
+exports.restrictTo = (...roles) => {
+  return (req, res, next) => {
+    //roles ['admin', 'lead-guide']
+    if (!roles.includes(req.user.role)) {
+      return next(
+        new AppError('You do not have permission to perform this action', 403)
+      );
+    }
+    //if role is admin or lead-guide: continue
+    next();
+  };
+};
