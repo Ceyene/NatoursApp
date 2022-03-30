@@ -59,6 +59,18 @@ exports.updateMe = catchAsync(async (req, res, next) => {
     }
   });
 });
+exports.deleteMe = catchAsync(async (req, res, next) => {
+  //deleting currently authenticated user
+
+  //finding user by id and adding property of active with false value
+  await User.findByIdAndUpdate(req.user.id, { active: false });
+
+  //sending response to client
+  res.status(204).json({
+    status: 'success',
+    data: null
+  });
+});
 exports.createUser = (req, res) => {
   res.status(500).json({
     status: 'error',

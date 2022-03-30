@@ -46,7 +46,11 @@ const userSchema = new mongoose.Schema({
   },
   passwordChangedAt: Date,
   passwordResetToken: String,
-  passwordResetExpires: Date
+  passwordResetExpires: Date,
+  active: {
+    type: Boolean,
+    default: true
+  }
 });
 
 //encrypting passwords -> pre-middleware associated to "save" event
@@ -69,6 +73,13 @@ userSchema.pre('save', function(next) {
   if (!this.isModified('password')) return next();
 
   this.passwordChangedAt = Date.now();
+  next();
+});
+
+//don't show deleted users in queries -> pre-middleware associated to /^find/ methods
+userSchema.pre(/^find/, function(next) {
+  // this points to the current query
+  this.find({ active: { $ne: false } });
   next();
 });
 
