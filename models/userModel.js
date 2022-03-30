@@ -64,6 +64,14 @@ userSchema.pre('save', async function(next) {
   next();
 });
 
+//update passwordChangedAt property -> pre-middleware associated to "save" event
+userSchema.pre('save', function(next) {
+  if (!this.isModified('password')) return next();
+
+  this.passwordChangedAt = Date.now();
+  next();
+});
+
 // INSTANCE METHODS //
 
 //Checking if password is valid
