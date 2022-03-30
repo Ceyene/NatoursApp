@@ -9,6 +9,10 @@ const userSchema = new mongoose.Schema({
   name: {
     type: String,
     required: [true, 'Please, provide your name'], //data validator
+    match: [
+      new RegExp(/^[a-zA-Z\s]+$/),
+      '{VALUE} is not valid. Please use only letters'
+    ],
     trim: true //removes all white spaces at the beginning and the end
   },
   email: {
