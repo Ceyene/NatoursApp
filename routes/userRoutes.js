@@ -11,7 +11,9 @@ const {
   signUp,
   logIn,
   forgotPassword,
-  resetPassword
+  resetPassword,
+  protect,
+  updatePassword
 } = require('./../controllers/authController');
 
 //USERS ROUTER
@@ -24,6 +26,8 @@ router.post('/login', logIn); //login is a special endpoint
 
 router.post('/forgotPassword', forgotPassword); //forgotPassword is a special endpoint
 router.patch('/resetPassword/:token', resetPassword); //resetPassword is a special endpoint
+
+router.patch('/updateMyPassword', protect, updatePassword); //updateMyPassword is a special endpoint
 
 router
   .route('/')
