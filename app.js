@@ -3,6 +3,8 @@ const express = require('express');
 const morgan = require('morgan'); //popular logging middleware
 const rateLimit = require('express-rate-limit');
 const helmet = require('helmet');
+const mongoSanitize = require('express-mongo-sanitize');
+
 const AppError = require('./utils/appError');
 const globalErrorHandler = require('./controllers/errorController');
 //ROUTERS
@@ -35,6 +37,9 @@ app.use('/api', limiter);
 //Body parser - Reading data from body into req.body
 app.use(express.json({ limit: '10kb' })); //allow us to put body data inside the request and limiting the amount of data sent in body requests (Express by itself doesn't do it)
 app.use(express.static(`${__dirname}/public`)); //allow us to serve static files
+
+//Data sanitization against NoSQL query injection
+app.use(mongoSanitize()); //removing all characters that allows to create query operators from req.body, req.params and req query string
 
 //adding the request time to all requests (test middleware)
 app.use((req, res, next) => {
