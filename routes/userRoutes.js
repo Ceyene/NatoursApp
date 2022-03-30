@@ -5,7 +5,8 @@ const {
   createUser,
   getUser,
   updateUser,
-  deleteUser
+  deleteUser,
+  updateMe
 } = require('./../controllers/userController');
 const {
   signUp,
@@ -28,6 +29,7 @@ router.post('/forgotPassword', forgotPassword); //forgotPassword is a special en
 router.patch('/resetPassword/:token', resetPassword); //resetPassword is a special endpoint
 
 router.patch('/updateMyPassword', protect, updatePassword); //updateMyPassword is a special endpoint
+router.patch('/updateMe', protect, updateMe); //updateMe is a special endpoint
 
 router
   .route('/')
