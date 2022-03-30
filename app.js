@@ -12,6 +12,7 @@ const app = express();
 
 //GLOBAL MIDDLEWARES
 
+//Development logging
 if (process.env.NODE_ENV === 'development') {
   //logging only in development
   app.use(morgan('dev')); //3RD PARTY MIDDLEWARE
@@ -27,11 +28,9 @@ const limiter = rateLimit({
 //using the limiter for every requests whose url starts with api
 app.use('/api', limiter);
 
-//allow us to put body data inside the request (Express by itself doesn't do it)
-app.use(express.json());
-
-//allow us to serve static files
-app.use(express.static(`${__dirname}/public`));
+//Body parser - Reading data from body into req.body
+app.use(express.json()); //allow us to put body data inside the request (Express by itself doesn't do it)
+app.use(express.static(`${__dirname}/public`)); //allow us to serve static files
 
 //adding the request time to all requests
 app.use((req, res, next) => {
