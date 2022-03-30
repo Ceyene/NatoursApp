@@ -14,6 +14,21 @@ const signToken = id => {
   });
 };
 
+//creating and sending token to reset password
+const createSendToken = (user, statusCode, res) => {
+  //creating new JWT for logging in the user
+  const token = signToken(user._id);
+
+  //sending the token and the user to the client
+  res.status(statusCode).json({
+    status: 'success',
+    token,
+    data: {
+      user
+    }
+  });
+};
+
 //sing up handler
 exports.signUp = catchAsync(async (req, res, next) => {
   const newUser = await User.create({
@@ -25,17 +40,8 @@ exports.signUp = catchAsync(async (req, res, next) => {
     role: req.body.role
   });
 
-  //creating new JWT for logging in the new user
-  const token = signToken(newUser._id);
-
-  //sending the new user to the client
-  res.status(201).json({
-    status: 'success',
-    token,
-    data: {
-      user: newUser
-    }
-  });
+  //creating new JWT for logging in the new user and sending response to client
+  createSendToken(newUser, 201, res);
 });
 
 //log in handler
@@ -54,11 +60,8 @@ exports.logIn = catchAsync(async (req, res, next) => {
     return next(new AppError('Incorrect email or password', 401));
   }
   //3) sending token to the client
-  const token = signToken(user._id);
-  res.status(200).json({
-    status: 'success',
-    token
-  });
+  //creating JWT for logging in the user and sending response to client
+  createSendToken(user, 200, res);
 });
 
 //implementing protected routes
@@ -184,11 +187,8 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
   //3) update changedPasswordAt property for the user
 
   //4) log the user in, send JWT
-  const token = signToken(user._id);
-  res.status(200).json({
-    status: 'success',
-    token
-  });
+  //creating JWT for logging in the user and sending response to client
+  createSendToken(user, 200, res);
 });
 
 //Password updating functionality (for logged in users)
@@ -206,9 +206,6 @@ exports.updatePassword = catchAsync(async (req, res, next) => {
   user.passwordConfirm = req.body.passwordConfirm;
   await user.save(); //saving previous modifications -> validations will be done here, pre-middlware associated with save, so don't use findByIdAndUpdate
   //4) log user in, send JWT
-  const token = signToken(user._id);
-  res.status(200).json({
-    status: 'success',
-    token
-  });
+  //creating JWT for logging in the user and sending response to client
+  createSendToken(user, 200, res);
 });
