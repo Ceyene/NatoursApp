@@ -11,7 +11,7 @@ const {
   getMonthlyPlan
 } = require('./../controllers/tourController');
 const { protect, restrictTo } = require('./../controllers/authController');
-const { createReview } = require('./../controllers/reviewController');
+const reviewRouter = require('./../routes/reviewRoutes');
 
 //TOURS ROUTER
 const router = express.Router();
@@ -19,6 +19,9 @@ const router = express.Router();
 //PARAM MIDDLEWARES
 //validating id
 //router.param('id', checkID);
+
+//NESTED ROUTES - redirects to reviewRoutes.js
+router.use('/:tourId/reviews', reviewRouter);
 
 //ALIAS FOR POPULAR SEARCH
 router.route('/top-5-cheap').get(aliasTopTours, getAllTours);
@@ -39,8 +42,5 @@ router
   .get(getTour)
   .patch(updateTour)
   .delete(protect, restrictTo('admin', 'lead-guide'), deleteTour);
-router
-  .route('/:tourId/reviews')
-  .post(protect, restrictTo('user'), createReview);
 
 module.exports = router;
