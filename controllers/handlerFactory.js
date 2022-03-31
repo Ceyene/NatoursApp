@@ -18,3 +18,26 @@ exports.deleteOne = Model => {
     });
   });
 };
+//handler factory to update resources
+exports.updateOne = Model => {
+  return catchAsync(async (req, res, next) => {
+    const doc = await Model.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+      runValidators: true
+    });
+
+    //HANDLING NOT FOUND RESOURCES
+    if (!doc) {
+      return next(new AppError('No document found with that ID', 404));
+    }
+
+    res.status(200).json({
+      status: 'success',
+      data: {
+        data: doc
+      }
+    });
+  });
+};
+//handler factory to create resources
+//handler factory to read resources

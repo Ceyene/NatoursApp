@@ -1,7 +1,7 @@
 //dependencies
 const Review = require('./../models/reviewModel');
 const catchAsync = require('./../utils/catchAsync');
-const { deleteOne } = require('./handlerFactory');
+const { deleteOne, updateOne } = require('./handlerFactory');
 
 //REVIEWS ROUTE HANDLERS
 exports.getAllReviews = catchAsync(async (req, res, next) => {
@@ -34,4 +34,5 @@ exports.createReview = catchAsync(async (req, res, next) => {
     }
   });
 });
+exports.updateReview = updateOne(Review);
 exports.deleteReview = deleteOne(Review);

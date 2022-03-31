@@ -41,7 +41,7 @@ router
 router
   .route('/:id')
   .get(getUser)
-  .patch(updateUser)
-  .delete(protect, restrictTo('admin'), deleteUser);
+  .patch(protect, restrictTo('admin'), updateUser) //admin use only
+  .delete(protect, restrictTo('admin'), deleteUser); //admin use only
 
 module.exports = router;
