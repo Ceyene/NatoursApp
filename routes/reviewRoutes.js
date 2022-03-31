@@ -3,6 +3,7 @@ const express = require('express');
 const {
   getAllReviews,
   setTourUserIds,
+  getReview,
   createReview,
   updateReview,
   deleteReview
@@ -21,6 +22,7 @@ router
 
 router
   .route('/:id')
+  .get(getReview)
   .patch(protect, updateReview)
   .delete(protect, restrictTo('user', 'admin'), deleteReview);
 

@@ -52,4 +52,24 @@ exports.createOne = Model => {
     });
   });
 };
-//handler factory to read resources
+//handler factory to read specific resource by Id
+exports.getOne = (Model, popOptions) => {
+  return catchAsync(async (req, res, next) => {
+    let query = Model.findById(req.params.id); //Model.findOne({_id: req.params.id})
+    if (popOptions) query = query.populate(popOptions); //populating our references with data
+    const doc = await query;
+
+    //HANDLING NOT FOUND RESOURCES
+    if (!doc) {
+      return next(new AppError('No document found with that ID', 404));
+    }
+
+    //send specified document to the client
+    res.status(200).json({
+      status: 'success',
+      data: {
+        data: doc
+      }
+    });
+  });
+};

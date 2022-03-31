@@ -2,8 +2,7 @@
 const Tour = require('./../models/tourModel');
 const APIFeatures = require('./../utils/apiFeatures');
 const catchAsync = require('./../utils/catchAsync');
-const AppError = require('./../utils/appError');
-const { deleteOne, updateOne, createOne } = require('./handlerFactory');
+const { deleteOne, updateOne, createOne, getOne } = require('./handlerFactory');
 
 //MIDDLEWARE: ADDING ALIAS FOR POPULAR SEARCH
 exports.aliasTopTours = (req, res, next) => {
@@ -33,27 +32,9 @@ exports.getAllTours = catchAsync(async (req, res, next) => {
     }
   });
 });
-exports.getTour = catchAsync(async (req, res, next) => {
-  const tour = await Tour.findById(req.params.id).populate('reviews'); //virtual populating our tours with user reviews
-  //Tour.findOne({_id: req.params.id})
-
-  //HANDLING NOT FOUND RESOURCES
-  if (!tour) {
-    return next(new AppError('No tour found with that ID', 404));
-  }
-
-  //send specified tour to the client
-  res.status(200).json({
-    status: 'success',
-    data: {
-      tour
-    }
-  });
-});
+exports.getTour = getOne(Tour, { path: 'reviews' });
 exports.createTour = createOne(Tour);
-
 exports.updateTour = updateOne(Tour);
-
 exports.deleteTour = deleteOne(Tour);
 
 //Aggregation Pipeline: Matching and Grouping

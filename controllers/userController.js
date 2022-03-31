@@ -2,7 +2,7 @@
 const AppError = require('../utils/appError');
 const User = require('./../models/userModel');
 const catchAsync = require('./../utils/catchAsync');
-const { deleteOne, updateOne } = require('./handlerFactory');
+const { deleteOne, updateOne, getOne } = require('./handlerFactory');
 
 //filtering data object
 const filterObj = (obj, ...allowedFields) => {
@@ -75,15 +75,9 @@ exports.deleteMe = catchAsync(async (req, res, next) => {
 exports.createUser = (req, res) => {
   res.status(500).json({
     status: 'error',
-    message: 'This route is not yet defined'
+    message: 'This route is not defined! Please, use /signup instead.'
   });
 };
-exports.getUser = (req, res) => {
-  res.status(500).json({
-    status: 'error',
-    message: 'This route is not yet defined'
-  });
-};
-
+exports.getUser = getOne(User);
 exports.updateUser = updateOne(User); //admin use only
 exports.deleteUser = deleteOne(User); //admin use only
