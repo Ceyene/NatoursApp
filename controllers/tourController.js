@@ -3,6 +3,7 @@ const Tour = require('./../models/tourModel');
 const APIFeatures = require('./../utils/apiFeatures');
 const catchAsync = require('./../utils/catchAsync');
 const AppError = require('./../utils/appError');
+const { deleteOne } = require('./handlerFactory');
 
 //MIDDLEWARE: ADDING ALIAS FOR POPULAR SEARCH
 exports.aliasTopTours = (req, res, next) => {
@@ -77,20 +78,7 @@ exports.updateTour = catchAsync(async (req, res, next) => {
     }
   });
 });
-exports.deleteTour = catchAsync(async (req, res, next) => {
-  const tour = await Tour.findByIdAndDelete(req.params.id);
-
-  //HANDLING NOT FOUND RESOURCES
-  if (!tour) {
-    return next(new AppError('No tour found with that ID', 404));
-  }
-
-  //status = 204 ---> No Content
-  res.status(204).json({
-    status: 'success',
-    data: null //-> we won't send any data, because the resource no longer exists
-  });
-});
+exports.deleteTour = deleteOne(Tour);
 
 //Aggregation Pipeline: Matching and Grouping
 //Getting Tour Stats, ordered by difficulty
