@@ -31,6 +31,20 @@ const reviewSchema = new mongoose.Schema(
   }
 );
 
+//QUERY MIDDLEWARE - Pre Middleware - associated to /^find/ queries
+//populating child reference to the corresponding tour in each review
+reviewSchema.pre(/^find/, function(next) {
+  this.populate({
+    path: 'tour',
+    select: 'name'
+    //populating child reference to the corresponding user in each review
+  }).populate({
+    path: 'user',
+    select: 'name photo' //let's not leak user's data here
+  });
+  next();
+});
+
 //creating a model out of the previous schema
 const Review = mongoose.model('Review', reviewSchema);
 
