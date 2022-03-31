@@ -2,7 +2,7 @@
 const mongoose = require('mongoose');
 const slugify = require('slugify');
 const validator = require('validator');
-const User = require('./userModel');
+//const User = require('./userModel');
 
 //creating a schema for our db documents
 const tourSchema = new mongoose.Schema(
@@ -110,7 +110,10 @@ const tourSchema = new mongoose.Schema(
         day: Number
       }
     ],
-    guides: Array
+    guides: [
+      //embedded document
+      { type: mongoose.Schema.ObjectId, ref: 'User' }
+    ]
   },
   {
     toJSON: { virtuals: true }, //when data outputted as JSON: show virtual properties
@@ -132,12 +135,12 @@ tourSchema.pre('save', function(next) {
 
 //Pre Middleware - associated to the save event
 //let's retrieve tour guides documents each time a new tour is created
-tourSchema.pre('save', async function(next) {
-  //iterate through the guides array and get a document in each iteration
-  const guidesPromises = this.guides.map(async id => await User.findById(id));
-  this.guides = await Promise.all(guidesPromises);
-  next();
-});
+// tourSchema.pre('save', async function(next) {
+//   //iterate through the guides array and get a document in each iteration
+//   const guidesPromises = this.guides.map(async id => await User.findById(id));
+//   this.guides = await Promise.all(guidesPromises);
+//   next();
+// });
 
 /*
 //Document Middleware - Post Middleware - associated to the save event
