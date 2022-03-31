@@ -126,6 +126,13 @@ tourSchema.virtual('durationWeeks').get(function() {
   return this.duration / 7; //duration in days, divided by 7
 });
 
+//virtual populating our tours with user reviews -> just connecting datasets here
+tourSchema.virtual('reviews', {
+  ref: 'Review', //the name of the Model we are referencing
+  foreignField: 'tour', //the name of the field where Review is referencing the tour's id
+  localField: '_id' //the name of the field where the tourSchema saves its id
+});
+
 //DOCUMENT MIDDLEWARE - Pre Middleware - associated to the save event
 //Runs before save() and create()
 tourSchema.pre('save', function(next) {
