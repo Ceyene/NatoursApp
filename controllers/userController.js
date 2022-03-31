@@ -17,6 +17,11 @@ const filterObj = (obj, ...allowedFields) => {
 };
 
 //USERS ROUTE HANDLERS
+exports.getMe = (req, res, next) => {
+  //setting the id of the current user to then continue to getUser()
+  req.params.id = req.user.id;
+  next();
+};
 exports.updateMe = catchAsync(async (req, res, next) => {
   //updating currently authenticated user
   //1) Creating error if user POSTs password data

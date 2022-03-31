@@ -6,6 +6,7 @@ const {
   getUser,
   updateUser,
   deleteUser,
+  getMe,
   updateMe,
   deleteMe
 } = require('./../controllers/userController');
@@ -29,8 +30,9 @@ router.post('/login', logIn); //login is a special endpoint
 
 router.post('/forgotPassword', forgotPassword); //forgotPassword is a special endpoint
 router.patch('/resetPassword/:token', resetPassword); //resetPassword is a special endpoint
-
 router.patch('/updateMyPassword', protect, updatePassword); //updateMyPassword is a special endpoint
+
+router.get('/me', protect, getMe, getUser); //getMe is a special endpoint
 router.patch('/updateMe', protect, updateMe); //updateMe is a special endpoint
 router.delete('/deleteMe', protect, deleteMe); //deleteMe is a special endpoint
 
