@@ -18,13 +18,13 @@ const reviewSchema = new mongoose.Schema(
       type: mongoose.Schema.ObjectId,
       ref: 'Tour',
       required: [true, 'Review must belong to a tour']
-    }, //embedded document
+    }, //embedded document reference
     user: {
       type: mongoose.Schema.ObjectId,
       ref: 'User',
       required: [true, 'Review must belong to a user']
     }
-  }, //embedded document
+  }, //embedded document reference
   {
     toJSON: { virtuals: true }, //when data outputted as JSON: show virtual properties
     toObject: { virtuals: true } //when data outputted as Object: show virtual properties

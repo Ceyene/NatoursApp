@@ -96,7 +96,7 @@ const tourSchema = new mongoose.Schema(
       description: String
     },
     locations: [
-      //embedded document
+      //embedded document reference
       {
         //GeoJSON
         type: {
@@ -111,7 +111,7 @@ const tourSchema = new mongoose.Schema(
       }
     ],
     guides: [
-      //embedded document
+      //embedded document reference
       { type: mongoose.Schema.ObjectId, ref: 'User' }
     ]
   },
