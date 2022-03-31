@@ -29,18 +29,20 @@ router.route('/top-5-cheap').get(aliasTopTours, getAllTours);
 //AGGREGATION PIPELINE: Getting tours by groups according price and ratings
 router.route('/tour-stats').get(getTourStats);
 //AGGREGATION PIPELINE: Getting tours by months of the year
-router.route('/monthly-plan/:year').get(getMonthlyPlan);
+router
+  .route('/monthly-plan/:year')
+  .get(protect, restrictTo('admin', 'lead-guide', 'guide'), getMonthlyPlan);
 
 //ROUTES
 //tours routes
 router
   .route('/')
-  .get(protect, getAllTours)
-  .post(createTour);
+  .get(getAllTours)
+  .post(protect, restrictTo('admin', 'lead-guide'), createTour);
 router
   .route('/:id')
   .get(getTour)
-  .patch(updateTour)
+  .patch(protect, restrictTo('admin', 'lead-guide'), updateTour)
   .delete(protect, restrictTo('admin', 'lead-guide'), deleteTour);
 
 module.exports = router;

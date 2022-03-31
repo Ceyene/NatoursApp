@@ -24,18 +24,26 @@ const {
 const router = express.Router();
 
 //ROUTES
-//users routes
-router.post('/signup', signUp); //signup is a special endpoint
-router.post('/login', logIn); //login is a special endpoint
+//public routes
+router.post('/signup', signUp);
+router.post('/login', logIn);
 
-router.post('/forgotPassword', forgotPassword); //forgotPassword is a special endpoint
-router.patch('/resetPassword/:token', resetPassword); //resetPassword is a special endpoint
-router.patch('/updateMyPassword', protect, updatePassword); //updateMyPassword is a special endpoint
+//authenticating user in order to use any of the following routes
+router.use(protect);
 
-router.get('/me', protect, getMe, getUser); //getMe is a special endpoint
-router.patch('/updateMe', protect, updateMe); //updateMe is a special endpoint
-router.delete('/deleteMe', protect, deleteMe); //deleteMe is a special endpoint
+//authenticated user routes
+router.post('/forgotPassword', forgotPassword);
+router.patch('/resetPassword/:token', resetPassword);
+router.patch('/updateMyPassword', updatePassword);
 
+router.get('/me', getMe, getUser);
+router.patch('/updateMe', updateMe);
+router.delete('/deleteMe', deleteMe);
+
+//restricting the following routes to non admin users
+router.use(restrictTo('admin'));
+
+//admin only routes
 router
   .route('/')
   .get(getAllUsers)
@@ -43,7 +51,7 @@ router
 router
   .route('/:id')
   .get(getUser)
-  .patch(protect, restrictTo('admin'), updateUser) //admin use only
-  .delete(protect, restrictTo('admin'), deleteUser); //admin use only
+  .patch(updateUser)
+  .delete(deleteUser);
 
 module.exports = router;
