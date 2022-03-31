@@ -52,7 +52,7 @@ exports.createOne = Model => {
     });
   });
 };
-//handler factory to read specific resource by Id
+//handler factory to read specific document by Id
 exports.getOne = (Model, popOptions) => {
   return catchAsync(async (req, res, next) => {
     let query = Model.findById(req.params.id); //Model.findOne({_id: req.params.id})
@@ -73,3 +73,4 @@ exports.getOne = (Model, popOptions) => {
     });
   });
 };
+//handler factory to read all documents from a resource
