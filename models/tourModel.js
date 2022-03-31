@@ -160,6 +160,15 @@ tourSchema.pre(/^find/, function(next) {
   next();
 });
 
+//QUERY MIDDLEWARE - Pre Middleware - associated to /^find/ queries
+//populating child references to guide users in this tour
+tourSchema.pre(/^find/, function(next) {
+  this.populate({
+    path: 'guides',
+    select: '-__v -passwordChangedAt'
+  });
+  next();
+});
 /*
 //QUERY MIDDLEWARE - Post Middleware - associated to find() query
 tourSchema.post(/^find/, function(docs, next) {

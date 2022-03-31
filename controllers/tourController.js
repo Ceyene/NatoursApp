@@ -33,11 +33,7 @@ exports.getAllTours = catchAsync(async (req, res, next) => {
   });
 });
 exports.getTour = catchAsync(async (req, res, next) => {
-  const tour = await Tour.findById(req.params.id).populate({
-    path: 'guides',
-    select: '-__v -passwordChangedAt'
-  }); //populating child references to guide users in this tour
-
+  const tour = await Tour.findById(req.params.id);
   //Tour.findOne({_id: req.params.id})
 
   //HANDLING NOT FOUND RESOURCES
