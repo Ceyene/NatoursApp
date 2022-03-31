@@ -14,6 +14,6 @@ const router = express.Router({ mergeParams: true }); //getting access to the pa
 router
   .route('/') // redirected from tourRoutes.js
   .get(getAllReviews)
-  .post(protect, restrictTo('user'), createReview);
+  .post(protect, restrictTo('user'), createReview); //POST /tour/234fsds4/reviews --> posting a review for a certain tour
 
 module.exports = router;
