@@ -4,8 +4,11 @@ const catchAsync = require('./../utils/catchAsync');
 
 //REVIEWS ROUTE HANDLERS
 exports.getAllReviews = catchAsync(async (req, res, next) => {
+  //getting all reviews for a certain tour with nested routes
+  let filter = {};
+  if (req.params.tourId) filter = { tour: req.params.tourId }; //filtering tours by id
   //EXECUTING QUERY
-  const reviews = await Review.find(); //awaiting the query for reviews and putting it inside the reviews variable
+  const reviews = await Review.find(filter); //awaiting the query for reviews and putting it inside the reviews variable
 
   //SENDING RESPONSE
   res.status(200).json({
