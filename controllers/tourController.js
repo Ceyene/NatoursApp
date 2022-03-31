@@ -3,7 +3,7 @@ const Tour = require('./../models/tourModel');
 const APIFeatures = require('./../utils/apiFeatures');
 const catchAsync = require('./../utils/catchAsync');
 const AppError = require('./../utils/appError');
-const { deleteOne, updateOne } = require('./handlerFactory');
+const { deleteOne, updateOne, createOne } = require('./handlerFactory');
 
 //MIDDLEWARE: ADDING ALIAS FOR POPULAR SEARCH
 exports.aliasTopTours = (req, res, next) => {
@@ -50,16 +50,8 @@ exports.getTour = catchAsync(async (req, res, next) => {
     }
   });
 });
-exports.createTour = catchAsync(async (req, res, next) => {
-  const newTour = await Tour.create(req.body);
+exports.createTour = createOne(Tour);
 
-  res.status(201).json({
-    status: 'success',
-    data: {
-      tour: newTour
-    }
-  });
-});
 exports.updateTour = updateOne(Tour);
 
 exports.deleteTour = deleteOne(Tour);

@@ -40,4 +40,16 @@ exports.updateOne = Model => {
   });
 };
 //handler factory to create resources
+exports.createOne = Model => {
+  return catchAsync(async (req, res, next) => {
+    const doc = await Model.create(req.body); //if anything out of the schema, will be ignored
+
+    res.status(201).json({
+      status: 'success',
+      data: {
+        data: doc
+      }
+    });
+  });
+};
 //handler factory to read resources

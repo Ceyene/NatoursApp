@@ -2,6 +2,7 @@
 const express = require('express');
 const {
   getAllReviews,
+  setTourUserIds,
   createReview,
   updateReview,
   deleteReview
@@ -16,7 +17,7 @@ const router = express.Router({ mergeParams: true }); //getting access to the pa
 router
   .route('/') // redirected from tourRoutes.js
   .get(getAllReviews) //GET /tour/234fsds4/reviews --> gets all reviews for a certain tour
-  .post(protect, restrictTo('user'), createReview); //POST /tour/234fsds4/reviews --> posting a review for a certain tour
+  .post(protect, restrictTo('user'), setTourUserIds, createReview); //POST /tour/234fsds4/reviews --> posting a review for a certain tour
 
 router
   .route('/:id')

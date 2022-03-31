@@ -1,7 +1,7 @@
 //dependencies
 const Review = require('./../models/reviewModel');
 const catchAsync = require('./../utils/catchAsync');
-const { deleteOne, updateOne } = require('./handlerFactory');
+const { deleteOne, updateOne, createOne } = require('./handlerFactory');
 
 //REVIEWS ROUTE HANDLERS
 exports.getAllReviews = catchAsync(async (req, res, next) => {
@@ -20,19 +20,14 @@ exports.getAllReviews = catchAsync(async (req, res, next) => {
     }
   });
 });
-exports.createReview = catchAsync(async (req, res, next) => {
-  //using url params and req to get tour and user id
+
+//using url params and req to get tour and user id
+exports.setTourUserIds = (req, res, next) => {
   if (!req.body.tour) req.body.tour = req.params.tourId;
   if (!req.body.user) req.body.user = req.user.id;
+  next();
+};
 
-  const newReview = await Review.create(req.body); //if anything out of the schema, will be ignored
-
-  res.status(201).json({
-    status: 'success',
-    data: {
-      review: newReview
-    }
-  });
-});
+exports.createReview = createOne(Review);
 exports.updateReview = updateOne(Review);
 exports.deleteReview = deleteOne(Review);
