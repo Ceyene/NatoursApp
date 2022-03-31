@@ -1,8 +1,13 @@
 //dependencies
 const Tour = require('./../models/tourModel');
-const APIFeatures = require('./../utils/apiFeatures');
 const catchAsync = require('./../utils/catchAsync');
-const { deleteOne, updateOne, createOne, getOne } = require('./handlerFactory');
+const {
+  deleteOne,
+  updateOne,
+  createOne,
+  getOne,
+  getAll
+} = require('./handlerFactory');
 
 //MIDDLEWARE: ADDING ALIAS FOR POPULAR SEARCH
 exports.aliasTopTours = (req, res, next) => {
@@ -13,25 +18,7 @@ exports.aliasTopTours = (req, res, next) => {
 };
 
 //TOURS ROUTE HANDLERS
-exports.getAllTours = catchAsync(async (req, res, next) => {
-  //EXECUTING QUERY
-  //create an object, instance from the APIFeatures class, to parse a query object (Tour.find()) and the query string from the url (given by Express)
-  const features = new APIFeatures(Tour.find(), req.query)
-    .filter()
-    .sort() // these methods manipulate the query
-    .limitFields()
-    .paginate();
-  const tours = await features.query; //awaiting the final query for tours and putting it inside the tours variable
-
-  //SENDING RESPONSE
-  res.status(200).json({
-    status: 'success',
-    results: tours.length, //when sending multiple results
-    data: {
-      tours //tours: tours
-    }
-  });
-});
+exports.getAllTours = getAll(Tour);
 exports.getTour = getOne(Tour, { path: 'reviews' });
 exports.createTour = createOne(Tour);
 exports.updateTour = updateOne(Tour);

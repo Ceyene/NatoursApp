@@ -1,25 +1,13 @@
 //dependencies
 const Review = require('./../models/reviewModel');
 const catchAsync = require('./../utils/catchAsync');
-const { deleteOne, updateOne, createOne, getOne } = require('./handlerFactory');
-
-//REVIEWS ROUTE HANDLERS
-exports.getAllReviews = catchAsync(async (req, res, next) => {
-  //getting all reviews for a certain tour with nested routes
-  let filter = {};
-  if (req.params.tourId) filter = { tour: req.params.tourId }; //filtering tours by id
-  //EXECUTING QUERY
-  const reviews = await Review.find(filter); //awaiting the query for reviews and putting it inside the reviews variable
-
-  //SENDING RESPONSE
-  res.status(200).json({
-    status: 'success',
-    results: reviews.length, //when sending multiple results
-    data: {
-      reviews //reviews: reviews
-    }
-  });
-});
+const {
+  deleteOne,
+  updateOne,
+  createOne,
+  getOne,
+  getAll
+} = require('./handlerFactory');
 
 //using url params and req to get tour and user id
 exports.setTourUserIds = (req, res, next) => {
@@ -28,6 +16,8 @@ exports.setTourUserIds = (req, res, next) => {
   next();
 };
 
+//REVIEWS ROUTE HANDLERS
+exports.getAllReviews = getAll(Review);
 exports.getReview = getOne(Review);
 exports.createReview = createOne(Review);
 exports.updateReview = updateOne(Review);

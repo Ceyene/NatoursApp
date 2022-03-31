@@ -2,7 +2,7 @@
 const AppError = require('../utils/appError');
 const User = require('./../models/userModel');
 const catchAsync = require('./../utils/catchAsync');
-const { deleteOne, updateOne, getOne } = require('./handlerFactory');
+const { deleteOne, updateOne, getOne, getAll } = require('./handlerFactory');
 
 //filtering data object
 const filterObj = (obj, ...allowedFields) => {
@@ -17,18 +17,6 @@ const filterObj = (obj, ...allowedFields) => {
 };
 
 //USERS ROUTE HANDLERS
-exports.getAllUsers = catchAsync(async (req, res, next) => {
-  const users = await User.find(); //awaiting the final query for tours and putting it inside the tours variable
-
-  //SENDING RESPONSE
-  res.status(200).json({
-    status: 'success',
-    results: users.length, //when sending multiple results
-    data: {
-      users //users: users
-    }
-  });
-});
 exports.updateMe = catchAsync(async (req, res, next) => {
   //updating currently authenticated user
   //1) Creating error if user POSTs password data
@@ -78,6 +66,7 @@ exports.createUser = (req, res) => {
     message: 'This route is not defined! Please, use /signup instead.'
   });
 };
+exports.getAllUsers = getAll(User);
 exports.getUser = getOne(User);
 exports.updateUser = updateOne(User); //admin use only
 exports.deleteUser = deleteOne(User); //admin use only

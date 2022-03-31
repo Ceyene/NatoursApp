@@ -1,4 +1,5 @@
 const catchAsync = require('./../utils/catchAsync');
+const APIFeatures = require('./../utils/apiFeatures');
 const AppError = require('./../utils/AppError');
 
 //handler factory to delete resources
@@ -74,3 +75,27 @@ exports.getOne = (Model, popOptions) => {
   });
 };
 //handler factory to read all documents from a resource
+exports.getAll = Model => {
+  return catchAsync(async (req, res, next) => {
+    //getting all reviews for a certain tour with nested routes
+    let filter = {};
+    if (req.params.tourId) filter = { tour: req.params.tourId }; //filtering tours by id
+    //EXECUTING QUERY
+    //create an object, instance from the APIFeatures class, to parse a query object (Model.find()) and the query string from the url (given by Express)
+    const features = new APIFeatures(Model.find(), req.query)
+      .filter()
+      .sort() // these methods manipulate the query
+      .limitFields()
+      .paginate();
+    const docs = await features.query; //awaiting the final query for docs and putting it inside the docs variable
+
+    //SENDING RESPONSE
+    res.status(200).json({
+      status: 'success',
+      results: docs.length, //when sending multiple results
+      data: {
+        data: docs
+      }
+    });
+  });
+};
