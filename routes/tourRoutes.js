@@ -8,7 +8,8 @@ const {
   deleteTour,
   aliasTopTours,
   getTourStats,
-  getMonthlyPlan
+  getMonthlyPlan,
+  getToursWithin
 } = require('./../controllers/tourController');
 const { protect, restrictTo } = require('./../controllers/authController');
 const reviewRouter = require('./../routes/reviewRoutes');
@@ -32,6 +33,13 @@ router.route('/tour-stats').get(getTourStats);
 router
   .route('/monthly-plan/:year')
   .get(protect, restrictTo('admin', 'lead-guide', 'guide'), getMonthlyPlan);
+
+//GEOSPATIAL QUERIES: Searching tours within a certain distance of a specified point and a specified unit
+//with parameters would be: /tours-within?distance=25&center=-40,45,unit=km
+//in this way it will be: /tours-within/25/center/-40,45/unit/km
+router
+  .route('/tours-within/:distance/center/:latlng/unit/:unit')
+  .get(getToursWithin);
 
 //ROUTES
 //tours routes

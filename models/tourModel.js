@@ -125,6 +125,7 @@ const tourSchema = new mongoose.Schema(
 //creating indexes for better performance in queries
 tourSchema.index({ price: 1, ratingsAverage: -1 });
 tourSchema.index({ slug: 1 });
+tourSchema.index({ startLocation: '2dsphere' }); //geospatial index -> 2D sphere index (in fictional locations you can use 2D index for this)
 
 //creating virtual property: tour duration in weeks
 tourSchema.virtual('durationWeeks').get(function() {

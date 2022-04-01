@@ -1,4 +1,5 @@
 //dependencies
+const AppError = require('../utils/AppError');
 const Tour = require('./../models/tourModel');
 const catchAsync = require('./../utils/catchAsync');
 const {
@@ -112,6 +113,38 @@ exports.getMonthlyPlan = catchAsync(async (req, res, next) => {
     status: 'success',
     data: {
       plan //plan : plan
+    }
+  });
+});
+
+//GEOSPATIAL QUERIES: Searching tours within a certain distance of a specified point and a specified unit
+// -> /tours-within/500/center/36.728513,-119.808303/unit/km
+exports.getToursWithin = catchAsync(async (req, res, next) => {
+  const { distance, latlng, unit } = req.params;
+  const [lat, lng] = latlng.split(',');
+
+  //defining radius, in a special unit called radians: distance / radius of Earth
+  //option in km and if not, assuming it's in miles
+  const radius = unit === 'km' ? distance / 6378.1 : distance / 3963.2;
+
+  //verifying that coordinates have been destructured
+  if (!lat || !lng) {
+    next(
+      new AppError(
+        'Please provide latitude and longitude in the format lat, lng',
+        400
+      )
+    );
+  }
+  const tours = await Tour.find({
+    startLocation: { $geoWithin: { $centerSphere: [[lng, lat], radius] } } //centerSphere: GeoJSON geometry used
+  });
+  //sending response to client
+  res.status(200).json({
+    status: 'success',
+    results: tours.length,
+    data: {
+      data: tours
     }
   });
 });
