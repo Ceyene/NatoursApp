@@ -81,6 +81,17 @@ reviewSchema.pre('save', function() {
   this.constructor.calcAverageRatings(this.tour); //Review.calcAverageRatings(this.tour)
 });
 
+//Pre-Middleware - associated to /^findOneAnd/ (Update/Delete)
+//updating the averageRatings to a tour each time a review is updated/deleted
+reviewSchema.pre(/^findOneAnd/, async function(next) {
+  this.r = await this.clone().findOne(); //need clone() to avoid error of "Query was already executed"
+  next();
+});
+//completing this with a Post-Middleware associated to /^findOneAnd/
+reviewSchema.post(/^findOneAnd/, async function() {
+  await this.r.constructor.calcAverageRatings(this.r.tour);
+});
+
 //creating a model out of the previous schema
 const Review = mongoose.model('Review', reviewSchema);
 
