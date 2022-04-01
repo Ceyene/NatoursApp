@@ -122,7 +122,7 @@ const tourSchema = new mongoose.Schema(
 );
 
 //creating indexes for better performance in queries
-tourSchema.index({ price: 1 });
+tourSchema.index({ price: 1, ratingsAverage: -1 });
 
 //creating virtual property: tour duration in weeks
 tourSchema.virtual('durationWeeks').get(function() {
