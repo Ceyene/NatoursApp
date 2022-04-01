@@ -82,7 +82,7 @@ exports.getAll = Model => {
     if (req.params.tourId) filter = { tour: req.params.tourId }; //filtering tours by id
     //EXECUTING QUERY
     //create an object, instance from the APIFeatures class, to parse a query object (Model.find()) and the query string from the url (given by Express)
-    const features = new APIFeatures(Model.find(), req.query)
+    const features = new APIFeatures(Model.find(filter), req.query)
       .filter()
       .sort() // these methods manipulate the query
       .limitFields()
