@@ -194,7 +194,9 @@ tourSchema.post(/^find/, function(docs, next) {
 //AGGREGATION MIDDLEWARE - Pre Middleware - associated to aggregate() method
 //removing from the output all the secret tours
 tourSchema.pre('aggregate', function(next) {
-  this.pipeline().unshift({ $match: { secretTour: { $ne: true } } }); //this will point to the aggregation object
+  if (!(this.pipeline().length > 0 && '$geoNear' in this.pipeline()[0])) {
+    this.pipeline().unshift({ $match: { secretTour: { $ne: true } } }); //this will point to the aggregation object
+  }
   next();
 });
 

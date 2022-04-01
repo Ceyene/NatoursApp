@@ -131,7 +131,7 @@ exports.getToursWithin = catchAsync(async (req, res, next) => {
   if (!lat || !lng) {
     next(
       new AppError(
-        'Please provide latitude and longitude in the format lat, lng',
+        'Please provide latitude and longitude in the format lat,lng.',
         400
       )
     );
@@ -139,12 +139,65 @@ exports.getToursWithin = catchAsync(async (req, res, next) => {
   const tours = await Tour.find({
     startLocation: { $geoWithin: { $centerSphere: [[lng, lat], radius] } } //centerSphere: GeoJSON geometry used
   });
+
   //sending response to client
   res.status(200).json({
     status: 'success',
     results: tours.length,
     data: {
       data: tours
+    }
+  });
+});
+
+//GEOSPATIAL AGGREGATION: Calculating distances to all tours from a certain point
+exports.getDistances = catchAsync(async (req, res, next) => {
+  const { latlng, unit } = req.params;
+  const [lat, lng] = latlng.split(',');
+
+  //option in miles for the multiplier that will parse distance from meters
+  const multiplier = unit === 'mi' ? 0.000621371 : 0.001;
+
+  //verifying that coordinates have been destructured
+  if (!lat || !lng) {
+    next(
+      new AppError(
+        'Please provide latitude and longitude in the format lat,lng.',
+        400
+      )
+    );
+  }
+
+  //Calculating distance with Aggregation pipeline
+  const distances = await Tour.aggregate([
+    //only one stage
+    {
+      //specific for this search, it should always be first stage
+      $geoNear: {
+        //starting point to calculate
+        near: {
+          type: 'Point',
+          coordinates: [lng * 1, lat * 1] //converting them to numbers
+        },
+        //field that will store all calculates distances
+        distanceField: 'distance',
+        distanceMultiplier: multiplier //parsing from m to km
+      }
+    },
+    {
+      //showing only the name and distance
+      $project: {
+        name: 1,
+        distance: 1
+      }
+    }
+  ]);
+
+  //sending response to client
+  res.status(200).json({
+    status: 'success',
+    data: {
+      data: distances
     }
   });
 });

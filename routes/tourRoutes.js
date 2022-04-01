@@ -9,7 +9,8 @@ const {
   aliasTopTours,
   getTourStats,
   getMonthlyPlan,
-  getToursWithin
+  getToursWithin,
+  getDistances
 } = require('./../controllers/tourController');
 const { protect, restrictTo } = require('./../controllers/authController');
 const reviewRouter = require('./../routes/reviewRoutes');
@@ -40,6 +41,9 @@ router
 router
   .route('/tours-within/:distance/center/:latlng/unit/:unit')
   .get(getToursWithin);
+
+//GEOSPATIAL AGGREGATION: Calculating distances to all tours from a certain point
+router.route('/distances/:latlng/unit/:unit').get(getDistances);
 
 //ROUTES
 //tours routes
