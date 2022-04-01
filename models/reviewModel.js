@@ -1,5 +1,6 @@
 //dependencies
 const mongoose = require('mongoose');
+const Tour = require('./tourModel');
 
 //creating a schema for our db documents
 const reviewSchema = new mongoose.Schema(
@@ -48,6 +49,36 @@ reviewSchema.pre(/^find/, function(next) {
     select: 'name photo' //let's not leak user's data here
   });
   next();
+});
+
+//adding a static method to the schema, so we calculate the ratings average in our tours
+reviewSchema.statics.calcAverageRatings = async function(tourId) {
+  //using aggregation pipeline - this points to the current model (Model.aggregate)
+  const stats = await this.aggregate([
+    //stages
+    //1- selecting reviews belonging to the current tour
+    { $match: { tour: tourId } },
+    //2- calculating the average of rating in all reviews grouped
+    {
+      $group: {
+        _id: '$tour',
+        nRating: { $sum: 1 },
+        avgRating: { $avg: '$rating' }
+      }
+    }
+  ]);
+
+  await Tour.findByIdAndUpdate(tourId, {
+    ratingsQuantity: stats[0].nRating,
+    ratingsAverage: stats[0].avgRating
+  });
+};
+
+//Pre-Middleware - associated to save event
+//adding the averageRatings to a tour each time a review is created (saved)
+reviewSchema.pre('save', function() {
+  //this points to the current doc (review) and constructor points to the model that created that doc (Review)
+  this.constructor.calcAverageRatings(this.tour); //Review.calcAverageRatings(this.tour)
 });
 
 //creating a model out of the previous schema
