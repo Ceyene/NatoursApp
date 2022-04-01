@@ -87,7 +87,7 @@ exports.getAll = Model => {
       .sort() // these methods manipulate the query
       .limitFields()
       .paginate();
-    const docs = await features.query.explain(); //awaiting the final query for docs and putting it inside the docs variable
+    const docs = await features.query; //awaiting the final query for docs and putting it inside the docs variable
 
     //SENDING RESPONSE
     res.status(200).json({
