@@ -32,6 +32,9 @@ const reviewSchema = new mongoose.Schema(
   }
 );
 
+//Compound Index - Avoiding a user to create more than one review for a tour
+reviewSchema.index({ tour: 1, user: 1 }, { unique: true });
+
 //QUERY MIDDLEWARE - Pre Middleware - associated to /^find/ queries
 //populating child reference to the corresponding user in each review
 reviewSchema.pre(/^find/, function(next) {
