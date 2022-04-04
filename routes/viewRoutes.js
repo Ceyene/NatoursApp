@@ -7,6 +7,6 @@ const router = express.Router();
 
 //VIEWS ROUTES
 router.get('/', getOverview);
-router.get('/tour', getTour);
+router.get('/tour/:slug', getTour);
 
 module.exports = router;
