@@ -73,7 +73,10 @@ app.use((req, res, next) => {
 
 //route for base template
 app.get('/', (req, res) => {
-  res.status(200).render('base');
+  res.status(200).render('base', {
+    tour: 'The Forest Hiker',
+    user: 'Cynthia'
+  });
 });
 
 //MOUNTING ROUTERS
