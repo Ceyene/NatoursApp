@@ -1,4 +1,5 @@
 //requiring dependencies
+const path = require('path');
 const express = require('express');
 const morgan = require('morgan'); //popular logging middleware
 const rateLimit = require('express-rate-limit');
@@ -15,7 +16,14 @@ const reviewRouter = require('./routes/reviewRoutes');
 
 const app = express();
 
+//Setting template engine
+app.set('view engine', 'pug');
+app.set('views', path.join(__dirname, 'views')); //using path module to create a path to the views folder
+
 //GLOBAL MIDDLEWARES
+
+//Serving static files
+app.use(express.static(path.join(__dirname, 'public'))); //using path module to create path to public folder
 
 //Setting secure HTTP Headers
 app.use(helmet());
@@ -38,7 +46,6 @@ app.use('/api', limiter);
 
 //Body parser - Reading data from body into req.body
 app.use(express.json({ limit: '10kb' })); //allow us to put body data inside the request and limiting the amount of data sent in body requests (Express by itself doesn't do it)
-app.use(express.static(`${__dirname}/public`)); //allow us to serve static files
 
 //Data sanitization against NoSQL query injection
 app.use(mongoSanitize()); //removing all characters that allows to create query operators from req.body, req.params and req query string
@@ -62,6 +69,11 @@ app.use((req, res, next) => {
   //defining a property in the request called requestTime
   req.requestTime = new Date().toISOString();
   next();
+});
+
+//route for base template
+app.get('/', (req, res) => {
+  res.status(200).render('base');
 });
 
 //MOUNTING ROUTERS
