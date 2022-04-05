@@ -40,14 +40,24 @@ const styleSrcUrls = [
   'https://tile.openstreetmap.org',
   'https://fonts.googleapis.com/'
 ];
-const connectSrcUrls = ['https://unpkg.com', 'https://tile.openstreetmap.org'];
+const connectSrcUrls = [
+  'https://unpkg.com',
+  'https://tile.openstreetmap.org',
+  'ws://127.0.0.1:3000/'
+];
 const fontSrcUrls = ['fonts.googleapis.com', 'fonts.gstatic.com'];
 app.use(
   helmet.contentSecurityPolicy({
     directives: {
-      defaultSrc: [],
-      connectSrc: ["'self'", ...connectSrcUrls],
-      scriptSrc: ["'self'", ...scriptSrcUrls],
+      defaultSrc: ["'self'", 'data:', 'blob:', 'https:', 'ws:'],
+      connectSrc: [
+        "'self'",
+        "'unsafe-inline'",
+        'data:',
+        'blob:',
+        ...connectSrcUrls
+      ],
+      scriptSrc: ["'self'", 'https:', 'http:', 'blob:', ...scriptSrcUrls],
       styleSrc: ["'self'", "'unsafe-inline'", ...styleSrcUrls],
       workerSrc: ["'self'", 'blob:'],
       objectSrc: [],

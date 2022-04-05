@@ -13,3 +13,7 @@ npm-debug.log*
 
 # dotenv environment variable files
 config.env
+
+# parcel related files
+bundled/
+.parcel-cache/
