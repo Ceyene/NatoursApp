@@ -1,5 +1,9 @@
 extends base
 
+block append head
+    script(defer src='/js/login.js')
+    script(defer src='https://cdnjs.cloudflare.com/ajax/libs/axios/0.26.1/axios.min.js')
+
 block content
     main.main
         .login-form
