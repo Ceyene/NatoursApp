@@ -6,6 +6,7 @@ const rateLimit = require('express-rate-limit');
 const helmet = require('helmet');
 const mongoSanitize = require('express-mongo-sanitize');
 const hpp = require('hpp');
+const cookieParser = require('cookie-parser');
 
 const AppError = require('./utils/appError');
 const globalErrorHandler = require('./controllers/errorController');
@@ -74,6 +75,9 @@ app.use('/api', limiter);
 
 //Body parser - Reading data from body into req.body
 app.use(express.json({ limit: '10kb' })); //allow us to put body data inside the request and limiting the amount of data sent in body requests (Express by itself doesn't do it)
+
+//Getting access to our cookies to get JWT
+app.use(cookieParser());
 
 //Data sanitization against NoSQL query injection
 app.use(mongoSanitize()); //removing all characters that allows to create query operators from req.body, req.params and req query string
