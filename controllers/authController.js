@@ -124,6 +124,37 @@ exports.protect = catchAsync(async (req, res, next) => {
   next();
 });
 
+//checking if user is logged in -> only for rendered pages, there will be no errors!
+exports.isLoggedIn = catchAsync(async (req, res, next) => {
+  //checking if there is a cookie called jwt
+  if (req.cookies.jwt) {
+    //1) Token Verification
+    //gettting the decoded data of the token
+    const decoded = await promisify(jwt.verify)(
+      req.cookies.jwt,
+      process.env.JWT_SECRET
+    );
+
+    //2) Checking if user still exists
+    const currentUser = await User.findById(decoded.id);
+
+    if (!currentUser) {
+      return next();
+    }
+
+    //4) Checking if user changed password after JWT was issued
+    if (currentUser.changedPasswordAfter(decoded.iat)) {
+      return next();
+    }
+
+    //5) There is a logged in user
+    res.locals.user = currentUser; //-> making user available to our views
+    return next();
+  }
+  //if there is no logged in user, just continue
+  next();
+});
+
 //Authorization: restricting for admin and lead-guides certain functionalities in the app
 exports.restrictTo = (...roles) => {
   return (req, res, next) => {
