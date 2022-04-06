@@ -35,7 +35,7 @@ const scriptSrcUrls = [
   'https://tile.openstreetmap.org',
   'https://js.stripe.com',
   'https://m.stripe.network',
-  'https://cdnjs.cloudflare.com'
+  'https://*.cloudflare.com'
 ];
 const styleSrcUrls = [
   'https://unpkg.com/',
