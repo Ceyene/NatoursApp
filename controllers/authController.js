@@ -81,6 +81,15 @@ exports.logIn = catchAsync(async (req, res, next) => {
   createSendToken(user, 200, res);
 });
 
+//log out handler
+exports.logOut = (req, res) => {
+  res.cookie('jwt', 'loggedout', {
+    expires: new Date(Date.now() + 10 * 1000), // expires in 10s
+    httpOnly: true //cannot be accessed or modified by the browser -> prevents XSS
+  });
+  res.status(200).json({ status: 'success' });
+};
+
 //implementing protected routes
 exports.protect = catchAsync(async (req, res, next) => {
   //1) Getting token and checking if it's present
@@ -125,35 +134,39 @@ exports.protect = catchAsync(async (req, res, next) => {
 });
 
 //checking if user is logged in -> only for rendered pages, there will be no errors!
-exports.isLoggedIn = catchAsync(async (req, res, next) => {
+exports.isLoggedIn = async (req, res, next) => {
   //checking if there is a cookie called jwt
   if (req.cookies.jwt) {
-    //1) Token Verification
-    //gettting the decoded data of the token
-    const decoded = await promisify(jwt.verify)(
-      req.cookies.jwt,
-      process.env.JWT_SECRET
-    );
+    try {
+      //1) Token Verification
+      //gettting the decoded data of the token
+      const decoded = await promisify(jwt.verify)(
+        req.cookies.jwt,
+        process.env.JWT_SECRET
+      );
 
-    //2) Checking if user still exists
-    const currentUser = await User.findById(decoded.id);
+      //2) Checking if user still exists
+      const currentUser = await User.findById(decoded.id);
 
-    if (!currentUser) {
+      if (!currentUser) {
+        return next();
+      }
+
+      //4) Checking if user changed password after JWT was issued
+      if (currentUser.changedPasswordAfter(decoded.iat)) {
+        return next();
+      }
+
+      //5) There is a logged in user
+      res.locals.user = currentUser; //-> making user available to our views
+      return next();
+    } catch (error) {
       return next();
     }
-
-    //4) Checking if user changed password after JWT was issued
-    if (currentUser.changedPasswordAfter(decoded.iat)) {
-      return next();
-    }
-
-    //5) There is a logged in user
-    res.locals.user = currentUser; //-> making user available to our views
-    return next();
   }
   //if there is no logged in user, just continue
   next();
-});
+};
 
 //Authorization: restricting for admin and lead-guides certain functionalities in the app
 exports.restrictTo = (...roles) => {

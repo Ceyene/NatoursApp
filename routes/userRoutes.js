@@ -13,6 +13,7 @@ const {
 const {
   signUp,
   logIn,
+  logOut,
   forgotPassword,
   resetPassword,
   protect,
@@ -27,6 +28,7 @@ const router = express.Router();
 //public routes
 router.post('/signup', signUp);
 router.post('/login', logIn);
+router.get('/logout', logOut);
 
 //authenticating user in order to use any of the following routes
 router.use(protect);

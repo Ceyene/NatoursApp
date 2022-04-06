@@ -3,11 +3,12 @@
 //dependencies
 import 'regenerator-runtime/runtime';
 import { displayMap } from './leaflet';
-import { login } from './login';
+import { login, logout } from './login';
 
 //DOM ELEMENTS
 const mapBox = document.getElementById('map');
 const loginForm = document.querySelector('.form');
+const logOutBtn = document.querySelector('.nav__el--logout');
 
 if (mapBox) {
   //adding a map to each tour page
@@ -15,8 +16,8 @@ if (mapBox) {
   displayMap(locations);
 }
 
+//adding functionality to our login form
 if (loginForm) {
-  //adding functionality to our login form
   loginForm.addEventListener('submit', e => {
     const email = document.getElementById('email').value;
     const password = document.getElementById('password').value;
@@ -24,4 +25,9 @@ if (loginForm) {
     e.preventDefault();
     login(email, password);
   });
+}
+
+//adding functionality to our logout button
+if (logOutBtn) {
+  logOutBtn.addEventListener('click', logout);
 }
