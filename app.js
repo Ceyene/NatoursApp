@@ -33,6 +33,8 @@ app.use(express.static(path.join(__dirname, 'public'))); //using path module to 
 const scriptSrcUrls = [
   'https://unpkg.com/',
   'https://tile.openstreetmap.org',
+  'https://js.stripe.com',
+  'https://m.stripe.network',
   'https://cdnjs.cloudflare.com'
 ];
 const styleSrcUrls = [
@@ -43,13 +45,25 @@ const styleSrcUrls = [
 const connectSrcUrls = [
   'https://unpkg.com',
   'https://tile.openstreetmap.org',
-  'ws://127.0.0.1:3000/'
+  'https://*.stripe.com',
+  'https://bundle.js:*',
+  'ws://127.0.0.1:*/'
 ];
 const fontSrcUrls = ['fonts.googleapis.com', 'fonts.gstatic.com'];
 app.use(
   helmet.contentSecurityPolicy({
     directives: {
       defaultSrc: ["'self'", 'data:', 'blob:', 'https:', 'ws:'],
+      baseUri: ["'self'"],
+      fontSrc: ["'self'", ...fontSrcUrls],
+      scriptSrc: ["'self'", 'https:', 'http:', 'blob:', ...scriptSrcUrls],
+      frameSrc: ["'self'", 'https://js.stripe.com'],
+      objectSrc: ["'none'"],
+      styleSrc: ["'self'", "'unsafe-inline'", ...styleSrcUrls],
+      workerSrc: ["'self'", 'blob:', 'https://m.stripe.network'],
+      childSrc: ["'self'", 'blob:'],
+      imgSrc: ["'self'", 'blob:', 'data:', 'https:'],
+      formAction: ["'self'"],
       connectSrc: [
         "'self'",
         "'unsafe-inline'",
@@ -57,12 +71,7 @@ app.use(
         'blob:',
         ...connectSrcUrls
       ],
-      scriptSrc: ["'self'", 'https:', 'http:', 'blob:', ...scriptSrcUrls],
-      styleSrc: ["'self'", "'unsafe-inline'", ...styleSrcUrls],
-      workerSrc: ["'self'", 'blob:'],
-      objectSrc: [],
-      imgSrc: ["'self'", 'blob:', 'data:', 'https:'],
-      fontSrc: ["'self'", ...fontSrcUrls]
+      upgradeInsecureRequests: []
     }
   })
 );
