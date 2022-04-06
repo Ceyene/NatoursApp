@@ -99,7 +99,7 @@ exports.protect = catchAsync(async (req, res, next) => {
     req.headers.authorization.startsWith('Bearer')
   ) {
     token = req.headers.authorization.split(' ')[1];
-  } else if (req.cookies.jwt) {
+  } else if (req.cookies.jwt && req.cookies.jwt !== 'loggedout') {
     token = req.cookies.jwt;
   }
 
@@ -130,6 +130,7 @@ exports.protect = catchAsync(async (req, res, next) => {
 
   //5) Grant access to protected route
   req.user = currentUser; //sending this currentUser to the request object, so it will be passed to the next middleware
+  res.locals.user = currentUser; //sending this currentUser to the locals variables, so it will be available for views
   next();
 });
 
