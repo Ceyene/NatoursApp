@@ -1,5 +1,6 @@
 //dependencies
 const Tour = require('../models/tourModel');
+const User = require('../models/userModel');
 const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
 
@@ -48,3 +49,23 @@ exports.getAccount = (req, res) => {
     title: 'Your account'
   });
 };
+//updating user data from the frontend
+exports.updateUserData = catchAsync(async (req, res, next) => {
+  //searching user and updating it
+  const updatedUser = await User.findByIdAndUpdate(
+    req.user.id,
+    {
+      name: req.body.name,
+      email: req.body.email
+    },
+    {
+      new: true,
+      runValidators: true
+    }
+  );
+  //sending updated user to the client
+  res.status(200).render('account', {
+    title: 'Your account',
+    user: updatedUser
+  });
+});

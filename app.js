@@ -95,6 +95,9 @@ app.use('/api', limiter);
 //Body parser - Reading data from body into req.body
 app.use(express.json({ limit: '10kb' })); //allow us to put body data inside the request and limiting the amount of data sent in body requests (Express by itself doesn't do it)
 
+//Url encoded - allows to send data from the client side
+app.use(express.urlencoded({ extended: true, limit: '10kb' }));
+
 //Getting access to our cookies to get JWT
 app.use(cookieParser());
 
