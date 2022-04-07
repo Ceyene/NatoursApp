@@ -49,8 +49,6 @@ exports.getMe = (req, res, next) => {
   next();
 };
 exports.updateMe = catchAsync(async (req, res, next) => {
-  console.log(req.file);
-  console.log(req.body);
   //updating currently authenticated user
   //1) Creating error if user POSTs password data
   if (req.body.password || req.body.passwordConfirm) {
@@ -64,7 +62,7 @@ exports.updateMe = catchAsync(async (req, res, next) => {
   //2) Filtering out unwanted field names that aren't allowed to be updated
   //only update certain information, not everything inside the req.body -> if user tries to modify the role to admin, it shouldn't be able to do it
   const filteredBody = filterObj(req.body, 'name', 'email'); //filtering data to be updated
-
+  if (req.file) filteredBody.photo = req.file.filename; //checking if there is a file in the request, and adding the photo property to the updating object
   //3) Update user document
   const updatedUser = await User.findByIdAndUpdate(req.user.id, filteredBody, {
     new: true,
