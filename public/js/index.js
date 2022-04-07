@@ -40,9 +40,14 @@ if (userDataForm) {
   userDataForm.addEventListener('submit', e => {
     //preventing form from being sent before executing the rest of the code of this function
     e.preventDefault();
-    const name = document.getElementById('name').value;
-    const email = document.getElementById('email').value;
-    updateSettings({ name, email }, 'data');
+
+    //programatically recreating a multipart/form-data
+    const form = new FormData();
+    form.append('name', document.getElementById('name').value);
+    form.append('email', document.getElementById('email').value);
+    form.append('photo', document.getElementById('photo').files[0]);
+
+    updateSettings(form, 'data');
   });
 }
 
