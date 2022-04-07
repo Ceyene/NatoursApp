@@ -1,4 +1,6 @@
 //dependencies
+const multer = require('multer');
+const sharp = require('sharp');
 const AppError = require('../utils/AppError');
 const Tour = require('./../models/tourModel');
 const catchAsync = require('./../utils/catchAsync');
@@ -9,6 +11,64 @@ const {
   getOne,
   getAll
 } = require('./handlerFactory');
+
+//configuring upload for images
+// 1) storing image as a buffer to make it available in case we need to resize it
+const multerStorage = multer.memoryStorage();
+//2) checking that the new file is an image to allow it to be uploaded
+const multerFilter = (req, file, cb) => {
+  if (file.mimetype.startsWith('image')) {
+    cb(null, true);
+  } else {
+    cb(new AppError('Not an image! Please, upload only images.', 400), false);
+  }
+};
+// uploading new images with complete configurations
+const upload = multer({ storage: multerStorage, fileFilter: multerFilter });
+
+//MIDDLEWARE: ADDING IMAGES TO OUR TOURS
+exports.uploadTourImages = upload.fields([
+  { name: 'imageCover', maxCount: 1 },
+  { name: 'images', maxCount: 3 }
+]);
+
+//MIDDLWARE: PROCESSING OUR UPLOADING IMAGES
+exports.resizeTourImages = catchAsync(async (req, res, next) => {
+  if (!req.files.imageCover || !req.files.images) return next();
+
+  //1) COVER IMAGE
+  //creating img filename and addint it to our request body, so it will be available in the updateOne factory function
+  req.body.imageCover = `tour-${req.params.id}-${Date.now()}-cover.jpeg`;
+  //using sharp to resize the uploading file -> takes image from buffer
+  await sharp(req.files.imageCover[0].buffer)
+    .resize(2000, 1333) //3/2 ratio
+    .toFormat('jpeg')
+    .jpeg({ quality: 90 })
+    .toFile(`public/img/tours/${req.body.imageCover}`);
+
+  //2) IMAGES
+  //creating en empty array of images in request body
+  req.body.images = [];
+
+  //processing files array and creating a new array of promises
+  const imgPromises = req.files.images.map(async (file, i) => {
+    //creating filename for each photo
+    const filename = `tour-${req.params.id}-${Date.now()}-${i + 1}.jpeg`;
+    //using sharp to resize each uploading file -> takes image from buffer
+    await sharp(file.buffer)
+      .resize(2000, 1333) //3/2 ratio
+      .toFormat('jpeg')
+      .jpeg({ quality: 90 })
+      .toFile(`public/img/tours/${filename}`);
+    //adding the filename of each photo to our request body to make it available for updateOne factory function
+    req.body.images.push(filename);
+  });
+
+  //awaiting all images promises to be solved before continue
+  await Promise.all(imgPromises);
+
+  next();
+});
 
 //MIDDLEWARE: ADDING ALIAS FOR POPULAR SEARCH
 exports.aliasTopTours = (req, res, next) => {
