@@ -1,6 +1,6 @@
 //dependencies
 const express = require('express');
-const multer = require('multer');
+
 const {
   getAllUsers,
   createUser,
@@ -9,7 +9,8 @@ const {
   deleteUser,
   getMe,
   updateMe,
-  deleteMe
+  deleteMe,
+  uploadUserPhoto
 } = require('./../controllers/userController');
 const {
   signUp,
@@ -21,9 +22,6 @@ const {
   restrictTo,
   updatePassword
 } = require('./../controllers/authController');
-
-//creating middleware and configuring upload for images
-const upload = multer({ dest: 'public/img/users' });
 
 //USERS ROUTER
 const router = express.Router();
@@ -43,7 +41,7 @@ router.patch('/resetPassword/:token', resetPassword);
 router.patch('/updateMyPassword', updatePassword);
 
 router.get('/me', getMe, getUser);
-router.patch('/updateMe', upload.single('photo'), updateMe); //updating user's photo and/or data
+router.patch('/updateMe', uploadUserPhoto, updateMe); //updating user's photo and/or data
 router.delete('/deleteMe', deleteMe);
 
 //restricting the following routes to non admin users
