@@ -10,7 +10,8 @@ const {
   getMe,
   updateMe,
   deleteMe,
-  uploadUserPhoto
+  uploadUserPhoto,
+  resizeUserPhoto
 } = require('./../controllers/userController');
 const {
   signUp,
@@ -41,7 +42,7 @@ router.patch('/resetPassword/:token', resetPassword);
 router.patch('/updateMyPassword', updatePassword);
 
 router.get('/me', getMe, getUser);
-router.patch('/updateMe', uploadUserPhoto, updateMe); //updating user's photo and/or data
+router.patch('/updateMe', uploadUserPhoto, resizeUserPhoto, updateMe); //updating user's photo and/or data
 router.delete('/deleteMe', deleteMe);
 
 //restricting the following routes to non admin users
