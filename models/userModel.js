@@ -23,7 +23,7 @@ const userSchema = new mongoose.Schema({
     validate: [validator.isEmail, 'Please, provide a valid email'], //custom data validator
     trim: true //removes all white spaces at the beginning and the end
   },
-  photo: String,
+  photo: { type: String, default: 'default.jpg' },
   role: {
     type: String,
     enum: ['user', 'guide', 'lead-guide', 'admin'],
