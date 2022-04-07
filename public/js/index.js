@@ -4,11 +4,13 @@
 import 'regenerator-runtime/runtime';
 import { displayMap } from './leaflet';
 import { login, logout } from './login';
+import { updateData } from './updateSettings';
 
 //DOM ELEMENTS
 const mapBox = document.getElementById('map');
 const loginForm = document.querySelector('.form--login');
 const logOutBtn = document.querySelector('.nav__el--logout');
+const userDataForm = document.querySelector('.form-user-data');
 
 if (mapBox) {
   //adding a map to each tour page
@@ -30,4 +32,15 @@ if (loginForm) {
 //adding functionality to our logout button
 if (logOutBtn) {
   logOutBtn.addEventListener('click', logout);
+}
+
+//adding functionality to our user data form
+if (userDataForm) {
+  userDataForm.addEventListener('submit', e => {
+    const name = document.getElementById('name').value;
+    const email = document.getElementById('email').value;
+    //preventing form from being sent before executing the rest of the code of this function
+    e.preventDefault();
+    updateData(name, email);
+  });
 }
