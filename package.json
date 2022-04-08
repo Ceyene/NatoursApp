@@ -43,6 +43,7 @@
     "regenerator-runtime": "^0.13.9",
     "sharp": "^0.30.3",
     "slugify": "^1.6.5",
+    "stripe": "^8.215.0",
     "validator": "^13.7.0"
   },
   "devDependencies": {

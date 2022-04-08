@@ -5,6 +5,7 @@ import 'regenerator-runtime/runtime';
 import { displayMap } from './leaflet';
 import { login, logout } from './login';
 import { updateSettings } from './updateSettings';
+import { bookTour } from './stripe';
 
 //DOM ELEMENTS
 const mapBox = document.getElementById('map');
@@ -12,6 +13,7 @@ const loginForm = document.querySelector('.form--login');
 const logOutBtn = document.querySelector('.nav__el--logout');
 const userDataForm = document.querySelector('.form-user-data');
 const userPasswordForm = document.querySelector('.form-user-password');
+const bookBtn = document.getElementById('book-tour');
 
 if (mapBox) {
   //adding a map to each tour page
@@ -76,5 +78,14 @@ if (userPasswordForm) {
     document.getElementById('password-current').value = '';
     document.getElementById('password').value = '';
     document.getElementById('password-confirm').value = '';
+  });
+}
+
+//adding functionality to our book tour button
+if (bookBtn) {
+  bookBtn.addEventListener('click', e => {
+    e.target.textContent = 'Processing...';
+    const { tourId } = e.target.dataset; //the ID of the button is tour-id -> it converts to tourId in the event target dataset, so it's the same name and it can be destructured
+    bookTour(tourId);
   });
 }
