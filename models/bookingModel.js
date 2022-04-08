@@ -39,6 +39,6 @@ bookingSchema.pre(/^find/, function(next) {
 });
 
 //creating a model out of the previous schema
-const Booking = mongoose.model('Review', bookingSchema);
+const Booking = mongoose.model('Booking', bookingSchema);
 
 module.exports = Booking;
