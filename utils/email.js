@@ -55,4 +55,12 @@ module.exports = class Email {
   async sendWelcome() {
     await this.send('welcome', 'Welcome to the Cyntours Family!');
   }
+
+  //PASSWORD RESET EMAILS - Sending reset token for password
+  async sendPasswordReset() {
+    await this.send(
+      'passwordReset',
+      'Your password reset token (valid for only 10 minutes)'
+    );
+  }
 };
