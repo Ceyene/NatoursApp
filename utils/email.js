@@ -7,7 +7,7 @@ module.exports = class Email {
     this.to = user.email;
     this.firstName = user.name.split(' ')[0];
     this.url = url;
-    this.from = `Cynthia Romero <${process.env.EMAIL_FROM}>`;
+    this.from = process.env.EMAIL_FROM;
   }
 
   //CREATING A TRANSPORTER -> service that will send the email
@@ -15,7 +15,13 @@ module.exports = class Email {
     //Production transporter
     if (process.env.NODE_ENV === 'production') {
       //SendGrid service
-      return 1;
+      return nodemailer.createTransport({
+        service: 'SendGrid',
+        auth: {
+          user: process.env.SENDGRID_USERNAME,
+          pass: process.env.SENDGRID_PASSWORD
+        }
+      });
     }
 
     //Development transporter -> using sandbox email in nodemailer
