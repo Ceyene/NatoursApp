@@ -3,6 +3,13 @@ const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const Tour = require('../models/tourModel');
 const Booking = require('../models/bookingModel');
 const catchAsync = require('../utils/catchAsync');
+const {
+  createOne,
+  deleteOne,
+  updateOne,
+  getOne,
+  getAll
+} = require('./handlerFactory');
 
 //creating a Stripe Checkout Session
 exports.getCheckoutSession = catchAsync(async (req, res, next) => {
@@ -56,3 +63,9 @@ exports.createBookingCheckout = catchAsync(async (req, res, next) => {
   //remove used data from query string and redirect user to homepage safely
   res.redirect(req.originalUrl.split('?')[0]);
 });
+
+exports.createBooking = createOne(Booking);
+exports.getBooking = getOne(Booking);
+exports.getAllBookings = getAll(Booking);
+exports.updateBooking = updateOne(Booking);
+exports.deleteBooking = deleteOne(Booking);
