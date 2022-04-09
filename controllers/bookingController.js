@@ -69,3 +69,15 @@ exports.getBooking = getOne(Booking);
 exports.getAllBookings = getAll(Booking);
 exports.updateBooking = updateOne(Booking);
 exports.deleteBooking = deleteOne(Booking);
+
+//checking if a user has booked a tour before allowing to review it
+exports.checkIfBooked = catchAsync(async (req, res, next) => {
+  // To check if booked was bought by user who wants to review it
+  const booking = await Booking.find({
+    user: req.user.id,
+    tour: req.body.tour
+  });
+  if (booking.length === 0)
+    return next(new AppError('You must buy this tour to review it', 401));
+  next();
+});

@@ -8,6 +8,7 @@ const {
   updateReview,
   deleteReview
 } = require('./../controllers/reviewController');
+const { checkIfBooked } = require('./../controllers/bookingController');
 const { protect, restrictTo } = require('./../controllers/authController');
 
 //REVIEWS ROUTER
@@ -21,7 +22,7 @@ router.use(protect);
 router
   .route('/') // redirected from tourRoutes.js
   .get(getAllReviews) //GET /tour/234fsds4/reviews --> gets all reviews for a certain tour
-  .post(restrictTo('user'), setTourUserIds, createReview); //POST /tour/234fsds4/reviews --> posting a review for a certain tour
+  .post(restrictTo('user'), setTourUserIds, checkIfBooked, createReview); //POST /tour/234fsds4/reviews --> posting a review for a certain tour
 
 router
   .route('/:id')
