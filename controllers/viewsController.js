@@ -38,6 +38,12 @@ exports.getTour = catchAsync(async (req, res, next) => {
     tour //tour: tour
   });
 });
+//sign up user
+exports.getSignUpForm = (req, res) => {
+  res.status(200).render('signup', {
+    title: 'Create a new account'
+  });
+};
 //loggin in user
 exports.getLogInForm = (req, res) => {
   res.status(200).render('login', {

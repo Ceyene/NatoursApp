@@ -4,11 +4,13 @@
 import 'regenerator-runtime/runtime';
 import { displayMap } from './leaflet';
 import { login, logout } from './login';
+import { signup } from './signup';
 import { updateSettings } from './updateSettings';
 import { bookTour } from './stripe';
 
 //DOM ELEMENTS
 const mapBox = document.getElementById('map');
+const signUpForm = document.querySelector('.form--sign-up');
 const loginForm = document.querySelector('.form--login');
 const logOutBtn = document.querySelector('.nav__el--logout');
 const userDataForm = document.querySelector('.form-user-data');
@@ -19,6 +21,19 @@ if (mapBox) {
   //adding a map to each tour page
   const locations = JSON.parse(mapBox.dataset.locations); //reading the locations from the dataset property
   displayMap(locations);
+}
+
+//adding functionality to our sign up form
+if (signUpForm) {
+  signUpForm.addEventListener('submit', e => {
+    //preventing form from being sent before executing the rest of the code of this function
+    e.preventDefault();
+    const name = document.getElementById('name').value;
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
+    const passwordConfirm = document.getElementById('passwordConfirm').value;
+    signup(name, email, password, passwordConfirm);
+  });
 }
 
 //adding functionality to our login form

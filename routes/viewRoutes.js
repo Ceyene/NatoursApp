@@ -4,6 +4,7 @@ const {
   getOverview,
   getTour,
   getMyTours,
+  getSignUpForm,
   getLogInForm,
   getAccount,
   updateUserData
@@ -17,6 +18,9 @@ const router = express.Router();
 //VIEWS ROUTES
 router.get('/', createBookingCheckout, isLoggedIn, getOverview);
 router.get('/tour/:slug', isLoggedIn, getTour);
+
+//SIGN UP ROUTE
+router.get('/signup', getSignUpForm);
 
 //LOGIN ROUTE
 router.get('/login', isLoggedIn, getLogInForm);
