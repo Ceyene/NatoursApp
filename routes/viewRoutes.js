@@ -3,6 +3,7 @@ const express = require('express');
 const {
   getOverview,
   getTour,
+  getMyTours,
   getLogInForm,
   getAccount,
   updateUserData
@@ -22,6 +23,9 @@ router.get('/login', isLoggedIn, getLogInForm);
 
 //USER ACCOUNT ROUTE
 router.get('/me', protect, getAccount);
+
+//MY BOOKINGS ROUTE
+router.get('/my-tours', protect, getMyTours);
 
 //UPDATE USER DATA ROUTE WITHOUT API
 router.post('/submit-user-data', protect, updateUserData);
