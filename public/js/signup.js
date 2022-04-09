@@ -4,7 +4,7 @@
 import axios from 'axios';
 import { showAlert } from './alerts';
 
-//login functionality with axios
+//signup functionality with axios
 export const signup = async (name, email, password, passwordConfirm) => {
   try {
     const res = await axios({
@@ -17,14 +17,12 @@ export const signup = async (name, email, password, passwordConfirm) => {
         passwordConfirm
       }
     });
-
-    console.log(name, email, password, passwordConfirm);
-    // if (res.data.status === 'success') {
-    //   showAlert('success', 'User created successfully');
-    //   window.setTimeout(() => {
-    //     location.assign('/');
-    //   }, 1000);
-    // }
+    if (res.data.status === 'success') {
+      showAlert('success', 'User created successfully');
+      window.setTimeout(() => {
+        location.assign('/');
+      }, 1000);
+    }
   } catch (err) {
     showAlert('error', err.response.data.message);
   }
