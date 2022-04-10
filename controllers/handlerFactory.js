@@ -1,6 +1,6 @@
-const catchAsync = require('./../utils/catchAsync');
-const APIFeatures = require('./../utils/apiFeatures');
-const AppError = require('./../utils/AppError');
+const catchAsync = require('../utils/catchAsync');
+const APIFeatures = require('../utils/apiFeatures');
+const AppError = require('../utils/appError');
 
 //handler factory to delete resources
 exports.deleteOne = Model => {

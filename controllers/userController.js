@@ -2,8 +2,8 @@
 const multer = require('multer');
 const sharp = require('sharp');
 const AppError = require('../utils/appError');
-const User = require('./../models/userModel');
-const catchAsync = require('./../utils/catchAsync');
+const User = require('../models/userModel');
+const catchAsync = require('../utils/catchAsync');
 const { deleteOne, updateOne, getOne, getAll } = require('./handlerFactory');
 
 //configuring upload for images

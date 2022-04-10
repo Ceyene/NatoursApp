@@ -1,9 +1,9 @@
 //dependencies
 const multer = require('multer');
 const sharp = require('sharp');
-const AppError = require('../utils/AppError');
-const Tour = require('./../models/tourModel');
-const catchAsync = require('./../utils/catchAsync');
+const AppError = require('../utils/appError');
+const Tour = require('../models/tourModel');
+const catchAsync = require('../utils/catchAsync');
 const {
   deleteOne,
   updateOne,
