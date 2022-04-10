@@ -1,7 +1,9 @@
 //dependencies
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const Tour = require('../models/tourModel');
+const User = require('../models/userModel');
 const Booking = require('../models/bookingModel');
+const AppError = require('../utils/appError');
 const catchAsync = require('../utils/catchAsync');
 const {
   createOne,
@@ -18,9 +20,7 @@ exports.getCheckoutSession = catchAsync(async (req, res, next) => {
   //2) Creating checkout session
   const session = await stripe.checkout.sessions.create({
     payment_method_types: ['card'],
-    success_url: `${req.protocol}://${req.get('host')}/?tour=${
-      req.params.tourId
-    }&user=${req.user.id}&price=${tour.price}`,
+    success_url: `${req.protocol}://${req.get('host')}/my-tours`,
     cancel_url: `${req.protocol}://${req.get('host')}/tour/${tour.slug}`,
     customer_email: req.user.email,
     //custom field: allows to pass data about the session
@@ -50,19 +50,37 @@ exports.getCheckoutSession = catchAsync(async (req, res, next) => {
 });
 
 //Creating new booking in our db
-exports.createBookingCheckout = catchAsync(async (req, res, next) => {
-  //TEMPORARY -> getting data from query string -> only in dev
-  const { tour, user, price } = req.query;
-
-  if (!(tour && user && price)) return next();
-
-  //creating new booking in our db
+const createBookingCheckout = async session => {
+  const tour = session.client_reference_id;
+  const user = (await User.findOne({ email: session.customer_email })).id;
+  const price = session.amount_total / 100;
   await Booking.create({ tour, user, price });
+};
 
-  //once created, instead of continue to the next middleware and rendering homepage,
-  //remove used data from query string and redirect user to homepage safely
-  res.redirect(req.originalUrl.split('?')[0]);
-});
+//using Stripe's webhooks to create a new booking in my database once payment succeeded
+exports.webhookCheckout = (req, res, next) => {
+  //getting Stripe's signature from Stripe added header
+  const signature = req.headers['stripe-signature'];
+  let event;
+  try {
+    //creating a Stripe event
+    event = stripe.webhooks.constructEvent(
+      req.body,
+      signature,
+      process.env.STRIPE_WEBHOOK_SECRET
+    );
+  } catch (error) {
+    return res.status(400).send(`Webhook error: ${error.message}`);
+  }
+
+  //checking if we received the event that we want
+  if (event.type === 'checkout.session.completed') {
+    createBookingCheckout(event.data.object);
+  }
+
+  //sending response to Stripé
+  res.status(200).json({ received: true });
+};
 
 exports.createBooking = createOne(Booking);
 exports.getBooking = getOne(Booking);

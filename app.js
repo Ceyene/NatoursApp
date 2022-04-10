@@ -17,6 +17,7 @@ const tourRouter = require('./routes/tourRoutes');
 const userRouter = require('./routes/userRoutes');
 const reviewRouter = require('./routes/reviewRoutes');
 const bookingRouter = require('./routes/bookingRoutes');
+const { webhookCheckout } = require('./controllers/bookingController');
 const viewRouter = require('./routes/viewRoutes');
 
 const app = express();
@@ -101,6 +102,13 @@ const limiter = rateLimit({
 
 //using the limiter for every requests whose url starts with api
 app.use('/api', limiter);
+
+//using Stripe wekhooks to create a new booking in my db
+app.post(
+  '/webhook-checkout',
+  express.raw({ type: 'application/json' }),
+  webhookCheckout
+); //should be executed before express converts req.body in json -> json doesn't work in this case
 
 //Body parser - Reading data from body into req.body
 app.use(express.json({ limit: '10kb' })); //allow us to put body data inside the request and limiting the amount of data sent in body requests (Express by itself doesn't do it)
