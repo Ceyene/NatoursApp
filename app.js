@@ -7,6 +7,7 @@ const helmet = require('helmet');
 const mongoSanitize = require('express-mongo-sanitize');
 const hpp = require('hpp');
 const cookieParser = require('cookie-parser');
+const compression = require('compression');
 
 const AppError = require('./utils/appError');
 const globalErrorHandler = require('./controllers/errorController');
@@ -118,6 +119,9 @@ app.use(
     ]
   })
 ); // clears up the query string, except for the whitelisted properties
+
+//compressing all our responses (JSON, HTML, etc)
+app.use(compression());
 
 //adding the request time to all requests (test middleware)
 app.use((req, res, next) => {
