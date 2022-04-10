@@ -15,7 +15,7 @@ const signToken = id => {
 };
 
 //creating and sending token to reset password
-const createSendToken = (user, statusCode, res) => {
+const createSendToken = (user, statusCode, req, res) => {
   //creating new JWT for logging in the user
   const token = signToken(user._id);
 
@@ -25,11 +25,9 @@ const createSendToken = (user, statusCode, res) => {
       //fecha actual + valor env variable converted to milliseconds
       Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000
     ),
-    httpOnly: true //cannot be accessed or modified by the browser -> prevents XSS
+    httpOnly: true, //cannot be accessed or modified by the browser -> prevents XSS
+    secure: req.secure || req.headers['x-forwarded-proto'] === 'https' //only send this cookie in an encrypted connection (https)
   };
-
-  // In production: only sent in an encrypted connection (https)
-  if (process.env.NODE_ENV === 'production') cookieOptions.secure = true;
 
   //sending the token via cookie
   res.cookie('jwt', token, cookieOptions);
@@ -61,7 +59,7 @@ exports.signUp = catchAsync(async (req, res, next) => {
   await new Email(newUser, url).sendWelcome();
 
   //creating new JWT for logging in the new user and sending response to client
-  createSendToken(newUser, 201, res);
+  createSendToken(newUser, 201, req, res);
 });
 
 //log in handler
@@ -81,7 +79,7 @@ exports.logIn = catchAsync(async (req, res, next) => {
   }
   //3) sending token to the client
   //creating JWT for logging in the user and sending response to client
-  createSendToken(user, 200, res);
+  createSendToken(user, 200, req, res);
 });
 
 //log out handler
@@ -254,7 +252,7 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
 
   //4) log the user in, send JWT
   //creating JWT for logging in the user and sending response to client
-  createSendToken(user, 200, res);
+  createSendToken(user, 200, req, res);
 });
 
 //Password updating functionality (for logged in users)
@@ -273,5 +271,5 @@ exports.updatePassword = catchAsync(async (req, res, next) => {
   await user.save(); //saving previous modifications -> validations will be done here, pre-middlware associated with save, so don't use findByIdAndUpdate
   //4) log user in, send JWT
   //creating JWT for logging in the user and sending response to client
-  createSendToken(user, 200, res);
+  createSendToken(user, 200, req, res);
 });
