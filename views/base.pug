@@ -12,7 +12,7 @@ html(lang="en")
             script(type='module' src='/js/bundled/index.js')
             
 
-    body 
+    body(data-alert=`${alert ? alert : ''}`) 
         // HEADER
         include _header
         
