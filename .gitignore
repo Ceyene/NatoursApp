@@ -15,5 +15,4 @@ npm-debug.log*
 config.env
 
 # parcel related files
-bundled/
 .parcel-cache/
