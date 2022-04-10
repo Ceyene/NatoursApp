@@ -8,6 +8,7 @@ const mongoSanitize = require('express-mongo-sanitize');
 const hpp = require('hpp');
 const cookieParser = require('cookie-parser');
 const compression = require('compression');
+const cors = require('cors');
 
 const AppError = require('./utils/appError');
 const globalErrorHandler = require('./controllers/errorController');
@@ -28,6 +29,10 @@ app.set('view engine', 'pug');
 app.set('views', path.join(__dirname, 'views')); //using path module to create a path to the views folder
 
 //GLOBAL MIDDLEWARES
+
+//Implementing CORS for the entire site
+app.use(cors()); //sets Access-Control-Allow-Origin HTTP Header to *
+app.options('*', cors()); //sets Access-Control-Allow-Origin HTTP Header in case of complex requests
 
 //Serving static files
 app.use(express.static(path.join(__dirname, 'public'))); //using path module to create path to public folder
