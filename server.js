@@ -33,8 +33,16 @@ const server = app.listen(port, () => {
 //HANDLING UNHANDLED REJECTIONS
 process.on('unhandledRejection', err => {
   console.log(err.name, err.message);
-  console.log('UNHANDLED REJECTION! Shutting down...');
+  console.log('UNHANDLED REJECTION! Shutting down...'); //gracefully shutdown when unhandled rejections
   server.close(() => {
     process.exit(1);
   });
+});
+
+//HANDLING SIGTERM SIGNALS FROM HEROKU
+process.on('SIGTERM', () => {
+  console.log('SIGTERM RECEIVED. Shutting down gracefully...');
+  server.close(() => {
+    console.log('Process terminated!');
+  }); //close our server still handling pending requests
 });
