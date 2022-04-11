@@ -7,8 +7,6 @@ import { login, logout } from './login';
 import { signup } from './signup';
 import { updateSettings } from './updateSettings';
 import { bookTour } from './stripe';
-import { showAlert } from './alerts';
-
 
 //DOM ELEMENTS
 const mapBox = document.getElementById('map');
@@ -106,7 +104,3 @@ if (bookBtn) {
     bookTour(tourId);
   });
 }
-
-//adding an alert message for successful bookings
-const alertMessage = document.querySelector('body').dataset.alert; //getting the alert from the dataset property
-if(alertMessage) showAlert('success', alertMessage, 20);

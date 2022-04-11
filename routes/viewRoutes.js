@@ -7,16 +7,12 @@ const {
   getSignUpForm,
   getLogInForm,
   getAccount,
-  updateUserData,
-  alerts
+  updateUserData
 } = require('../controllers/viewsController');
 const { isLoggedIn, protect } = require('../controllers/authController');
 
 //creating a router
 const router = express.Router();
-
-//Middleware -> picks alert from url query string and sends it to our response.locals
-router.use(alerts);
 
 //VIEWS ROUTES
 router.get('/', isLoggedIn, getOverview);
